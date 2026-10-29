@@ -1,10 +1,10 @@
 I am building KD SOLUTION IT, an enterprise multi-tenant SaaS platform.
 
-Please read the complete specification from: https://github.com/d97920622-gif/kd/blob/main/MASTER_PROMPT.md
+Please read the complete specification from: https://github.com/kohinur169/P6/blob/main/MASTER_PROMPT%20.md
 
-Full feature list: https://github.com/d97920622-gif/kd/blob/main/FEATURE_LIST.md
+Full feature list: https://github.com/kohinur169/P6/blob/main/FEATURE_LIST.md
 
-This is CHAT [1-10] of 10.
+This is CHAT [1-80] of 80. or more
 
 Current scope: [Chat specific scope from MASTER_PROMPT.md]
 
