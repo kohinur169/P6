@@ -1,7 +1,40 @@
 // path: docs/final/STEP_PLAN_250.md
 # KD SOLUTION IT - 250 STEP Chat Plan
 
-Master instruction for every chat: paste the master block from docs/final/MASTER_PROMPT.md Working Method section, then add the single STEP line for that chat. One chat finishes one STEP, commits, pushes and writes its handoff file before the next chat starts.
+## How this plan is used
+- This plan, docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md stay inside the
+  GitHub repository. The owner opens each new coding chat with this repository selected,
+  so the agent can read and verify the full plan and the complete project scope by itself.
+- The owner writes only one line in each new chat: Implement STEP NNN.
+  Example: Implement STEP 001.
+- The agent then reads FEATURE_LIST.md and MASTER_PROMPT.md in full, finds STEP NNN below,
+  reads the previous handoff file, implements only that STEP, runs typecheck and lint,
+  commits with the message "STEP NNN: title", pushes, and creates
+  docs/handoffs/STEP_NNN_COMPLETED.md before the chat ends.
+- One chat finishes exactly one STEP. STEP N+1 never starts before the handoff of STEP N exists.
+
+## Coverage Map (feature list section to STEP range)
+- Platform Foundations: STEP 001-012 and STEP 057-068.
+- Database and RLS for every feature area: STEP 013-037.
+- Roles, Permissions, Office Dashboards, Announcements: STEP 069-082.
+- Authentication, 2FA, Login Lock and LR-022 Sessions: STEP 038-056.
+- Business, Legal, Policies, One Person One Account: STEP 083-104.
+- Merchant Onboarding, Underwriting, KYC and Sub-Merchant Provisioning: STEP 083-104.
+- Automatic KYC Adapters (Jumio, Didit, Sumsub): STEP 183-188.
+- File Storage: STEP 105-112.
+- Clients, Products, Import, Invoices, Estimates, Recurring, Statements: STEP 113-135.
+- Payment Core, Double-Entry Ledger, Settlement, Reserve, Payout, Reconciliation: STEP 136-155.
+- Five Payment Provider Adapters (NMI, Payoneer, Rainforest, Stripe Connect, Airwallex): STEP 156-182.
+- Sales Tax Collection with TaxCloud: STEP 189-193.
+- Client Portal, Payment Pages, Payment Links: STEP 194-205.
+- Refunds, Disputes and Evidence Packs: STEP 206-214.
+- Public API, Test Mode and Store Plugins (Shopify, WooCommerce): STEP 215-226.
+- Plans, Entitlements and Subscription Billing: STEP 227-235.
+- Email System, Support and Status Page: STEP 236-245.
+- Blog, CMS, Public Website and SEO: within STEP 236-250 block as listed below.
+- Company Accounting and Operations Metrics: within the final block as listed below.
+- Background Jobs: inside the STEP of each owning feature and verified in the final block.
+- Performance, Deployment and Launch Verification: final STEPs.
 
 ## Foundation and Configuration
 

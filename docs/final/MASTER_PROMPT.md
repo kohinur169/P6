@@ -46,10 +46,21 @@ same coding session. Record the verified documentation and sandbox URLs in the a
 header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never from memory.
 
 ## Working Method for Each Chat
-- One chat implements exactly one STEP from docs/final/STEP_PLAN_250.md.
-- At the start, pull the latest branch and read docs/final/FEATURE_LIST.md,
-  docs/final/MASTER_PROMPT.md, docs/final/STEP_PLAN_250.md and the previous STEP handoff file.
-- Work only on the files owned by that STEP. Never edit files owned by another STEP.
+- These documents live inside the project repository: docs/final/FEATURE_LIST.md,
+  docs/final/MASTER_PROMPT.md and docs/final/STEP_PLAN_250.md. The owner selects this
+  repository when opening a coding chat, so the agent reads everything from the repository
+  itself. The owner does not paste any instruction block.
+- In each new chat the owner writes only one line: Implement STEP NNN.
+  Example: Implement STEP 001.
+- On receiving that line, the agent must, before writing any code:
+  1. Read docs/final/FEATURE_LIST.md in full.
+  2. Read this MASTER_PROMPT.md in full.
+  3. Find STEP NNN in docs/final/STEP_PLAN_250.md and identify its exact scope and the
+     feature list sections it belongs to.
+  4. Read the previous handoff file docs/handoffs/STEP_(NNN-1)_COMPLETED.md when it exists.
+  5. Pull the latest state of the working branch.
+- One chat implements exactly one STEP. Work only on the files owned by that STEP.
+  Never edit files owned by another STEP.
 - Migrations are append-only, numbered in order, never edited after commit, each with a rollback.
 - package.json is integrator-owned. When a package is needed, write a package request into
   the handoff file instead of editing package.json.
@@ -58,3 +69,5 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
   files created, migrations added, environment variables added, packages requested and the
   next STEP dependency.
 - Never start STEP N+1 before the handoff of STEP N exists.
+- If anything in the STEP conflicts with FEATURE_LIST.md, FEATURE_LIST.md wins and the
+  conflict must be written into the handoff file.
