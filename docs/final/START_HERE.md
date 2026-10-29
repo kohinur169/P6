@@ -6,6 +6,7 @@
 - docs/final/MASTER_PROMPT.md: the rules every coding chat must follow.
 - docs/final/STEP_PLAN_250.md: the project split into 250 small steps, one step per chat.
 - docs/final/PRODUCTION_CHECKLIST.md: accounts, environment variables, email domain, payment live readiness and the go-live sequence needed to run the finished project as a business.
+- docs/final/HANDOFF_TEMPLATE.md: the fixed template every chat copies to docs/handoffs/STEP_NNN_COMPLETED.md and fills completely.
 - docs/handoffs/: one completion file per finished STEP, created by the chat that finished it.
 
 ## How the owner runs the build

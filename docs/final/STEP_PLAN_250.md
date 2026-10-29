@@ -20,27 +20,52 @@ prove balanced ledger entries; provider work must prove a sandbox cycle; new env
 variables must be added to .env.example. The handoff file of each STEP records these proofs.
 
 ## Coverage Map (feature list section to STEP range)
-- Platform Foundations: STEP 001-012 and STEP 057-068.
-- Database and RLS for every feature area: STEP 013-037.
-- Roles, Permissions, Office Dashboards, Announcements: STEP 069-082.
-- Authentication, 2FA, Login Lock and LR-022 Sessions: STEP 038-056.
-- Business, Legal, Policies, One Person One Account: STEP 083-104.
-- Merchant Onboarding, Underwriting, KYC and Sub-Merchant Provisioning: STEP 083-104.
-- Automatic KYC Adapters (Jumio, Didit, Sumsub): STEP 183-188.
-- File Storage: STEP 105-112.
-- Clients, Products, Import, Invoices, Estimates, Recurring, Statements: STEP 113-135.
-- Payment Core, Double-Entry Ledger, Settlement, Reserve, Payout, Reconciliation: STEP 136-155.
-- Five Payment Provider Adapters (NMI, Payoneer, Rainforest, Stripe Connect, Airwallex): STEP 156-182.
-- Sales Tax Collection with TaxCloud: STEP 189-193.
-- Client Portal, Payment Pages, Payment Links: STEP 194-205.
-- Refunds, Disputes and Evidence Packs: STEP 206-214.
-- Public API, Test Mode and Store Plugins (Shopify, WooCommerce): STEP 215-226.
-- Plans, Entitlements and Subscription Billing: STEP 227-235.
-- Email System, Support and Status Page: STEP 236-245.
-- Blog, CMS, Public Website and SEO: within STEP 236-250 block as listed below.
-- Company Accounting and Operations Metrics: within the final block as listed below.
-- Background Jobs: inside the STEP of each owning feature and verified in the final block.
-- Performance, Deployment and Launch Verification: final STEPs.
+- Platform Foundations: STEP 001-011. Application Security Core: STEP 056-067.
+- Database Schema and RLS: STEP 012-036.
+- Roles, Permissions, Office Dashboards and Announcements: STEP 068-078.
+- Authentication, 2FA, Login Lock and LR-022 Sessions: STEP 037-055.
+- Merchant Onboarding, Underwriting, KYC and Sub-Merchant Provisioning: STEP 079-099.
+- File Storage Layer: STEP 100-105.
+- Clients, Products, Import, Invoices, Estimates, Recurring and Statements: STEP 106-126.
+- Payment Core, Double-Entry Ledger, Settlement, Reserve, Payout and Reconciliation: STEP 127-146.
+- Five Payment Provider Adapters (NMI, Payoneer, Rainforest, Stripe Connect, Airwallex): STEP 147-169.
+- Automatic KYC Adapters (Jumio, Didit, Sumsub): STEP 170-175.
+- Sales Tax Collection with TaxCloud: STEP 176-180.
+- Client Portal, Payment Pages and Payment Links: STEP 181-190.
+- Refunds, Disputes and Evidence Packs: STEP 191-199.
+- Public API, Test Mode and Store Plugins (Shopify, WooCommerce): STEP 200-211.
+- Plans, Entitlements and Subscription Billing: STEP 212-220.
+- Email System, Support and Status Page: STEP 221-230.
+- Public Website, CMS and Blog: STEP 231-238.
+- Company Accounting and Operations Metrics: STEP 239-243.
+- Performance, Deployment and Launch Verification: STEP 244-250.
+- Background Jobs: the queue, worker and scheduler foundation is STEP 011. Every feature
+  STEP that needs a job registers it on that foundation. STEP 249 verifies all schedules.
+
+## File Ownership Rules (applies to all 250 STEPs, no exceptions)
+- Foundation STEPs 001-011 own root configuration, config/ and lib/ foundation files.
+- Database STEPs 012-036 own only their numbered migration files in migrations/.
+- Auth STEPs 037-055 own app/(auth)/, app/api/auth/ and lib/auth/.
+- Security STEPs 056-067 own lib/security/.
+- Office STEPs 068-078 own app/(admin)/ and office components.
+- Onboarding and KYC STEPs 079-099 own app/(dashboard)/onboarding/, services/kyc/ and services/submerchant/.
+- Storage STEPs 100-105 own lib/storage/.
+- Business STEPs 106-126 own services/clients/, services/products/, services/invoices/ and invoice components.
+- Payment Core STEPs 127-146 own lib/payments/ core files (types, registry, routing, ledger, settlement), never adapter files.
+- Adapter STEPs 147-169 own exactly one file each under lib/payments/adapters/ plus their provider components.
+- KYC Adapter STEPs 170-175 own lib/kyc/adapters/ and KYC provider settings.
+- TaxCloud STEPs 176-180 own lib/tax/ and tax settings.
+- Portal STEPs 181-190 own app/(client-portal)/ and payment components.
+- Refund and Dispute STEPs 191-199 own services/refunds/ and services/disputes/.
+- API and Plugin STEPs 200-211 own app/api/public/, lib/api/ and the plugin source folders.
+- Plan and Billing STEPs 212-220 own services/billing/.
+- Email, Support and Status STEPs 221-230 own lib/email/, services/support/ and app/(public)/status/.
+- Public Website STEPs 231-238 own app/(public)/ and CMS components.
+- Company Accounting STEPs 239-243 own services/company-accounting/ and finance operations screens.
+- Performance and Deploy STEPs 244-250 own deployment configuration and docs/deploy/.
+- Shared files (package.json, lib/payments/registry.ts after STEP 128, migrations index,
+  docs/final/PROVIDER_DOCS.md) change only inside their owning STEP listed above.
+  docs/final/PROVIDER_DOCS.md is created by STEP 147 and extended only by adapter STEPs.
 
 ## Foundation and Configuration
 
@@ -74,8 +99,8 @@ Chat line: Implement STEP 009 only: Add lint rules for strict typing and English
 ### STEP 010: Add root layout shell with providers and theme tokens
 Chat line: Implement STEP 010 only: Add root layout shell with providers and theme tokens. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 010: Add root layout shell with providers and theme tokens", push, and create docs/handoffs/STEP_010_COMPLETED.md.
 
-### STEP 011: Add health check route handler returning service status
-Chat line: Implement STEP 011 only: Add health check route handler returning service status. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 011: Add health check route handler returning service status", push, and create docs/handoffs/STEP_011_COMPLETED.md.
+### STEP 011: Background job queue, worker and scheduler foundation with health check route
+Chat line: Implement STEP 011 only: Background job queue, worker and scheduler foundation with health check route. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 011: Background job queue, worker and scheduler foundation with health check route", push, and create docs/handoffs/STEP_011_COMPLETED.md.
 
 ## Database Schema and Row Level Security
 
@@ -85,8 +110,8 @@ Chat line: Implement STEP 012 only: Migration for companies table with tenant fi
 ### STEP 013: Migration for users and role assignment tables
 Chat line: Implement STEP 013 only: Migration for users and role assignment tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 013: Migration for users and role assignment tables", push, and create docs/handoffs/STEP_013_COMPLETED.md.
 
-### STEP 014: Migration for office permissions and delegation table
-Chat line: Implement STEP 014 only: Migration for office permissions and delegation table. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 014: Migration for office permissions and delegation table", push, and create docs/handoffs/STEP_014_COMPLETED.md.
+### STEP 014: Migration for office permissions, delegation, announcements and announcement dismissals tables
+Chat line: Implement STEP 014 only: Migration for office permissions, delegation, announcements and announcement dismissals tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 014: Migration for office permissions, delegation, announcements and announcement dismissals tables", push, and create docs/handoffs/STEP_014_COMPLETED.md.
 
 ### STEP 015: Migration for sessions and device proof keys table
 Chat line: Implement STEP 015 only: Migration for sessions and device proof keys table. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 015: Migration for sessions and device proof keys table", push, and create docs/handoffs/STEP_015_COMPLETED.md.
@@ -97,8 +122,8 @@ Chat line: Implement STEP 016 only: Migration for login attempts and account loc
 ### STEP 017: Migration for audit logs append-only hash chain table
 Chat line: Implement STEP 017 only: Migration for audit logs append-only hash chain table. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 017: Migration for audit logs append-only hash chain table", push, and create docs/handoffs/STEP_017_COMPLETED.md.
 
-### STEP 018: Migration for plans and plan entitlements tables
-Chat line: Implement STEP 018 only: Migration for plans and plan entitlements tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 018: Migration for plans and plan entitlements tables", push, and create docs/handoffs/STEP_018_COMPLETED.md.
+### STEP 018: Migration for plans, plan entitlements and pricing versions tables
+Chat line: Implement STEP 018 only: Migration for plans, plan entitlements and pricing versions tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 018: Migration for plans, plan entitlements and pricing versions tables", push, and create docs/handoffs/STEP_018_COMPLETED.md.
 
 ### STEP 019: Migration for subscriptions and subscription charges table
 Chat line: Implement STEP 019 only: Migration for subscriptions and subscription charges table. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 019: Migration for subscriptions and subscription charges table", push, and create docs/handoffs/STEP_019_COMPLETED.md.
@@ -112,8 +137,8 @@ Chat line: Implement STEP 021 only: Migration for invoices, invoice items and in
 ### STEP 022: Migration for estimates, estimate signatures and recurring schedules tables
 Chat line: Implement STEP 022 only: Migration for estimates, estimate signatures and recurring schedules tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 022: Migration for estimates, estimate signatures and recurring schedules tables", push, and create docs/handoffs/STEP_022_COMPLETED.md.
 
-### STEP 023: Migration for payment providers, provider keys and routing rules tables
-Chat line: Implement STEP 023 only: Migration for payment providers, provider keys and routing rules tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 023: Migration for payment providers, provider keys and routing rules tables", push, and create docs/handoffs/STEP_023_COMPLETED.md.
+### STEP 023: Migration for payment providers, provider keys, routing rules, webhook events and idempotency keys tables
+Chat line: Implement STEP 023 only: Migration for payment providers, provider keys, routing rules, webhook events and idempotency keys tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 023: Migration for payment providers, provider keys, routing rules, webhook events and idempotency keys tables", push, and create docs/handoffs/STEP_023_COMPLETED.md.
 
 ### STEP 024: Migration for payments, refunds and disputes tables
 Chat line: Implement STEP 024 only: Migration for payments, refunds and disputes tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 024: Migration for payments, refunds and disputes tables", push, and create docs/handoffs/STEP_024_COMPLETED.md.
@@ -127,8 +152,8 @@ Chat line: Implement STEP 026 only: Migration for settlements, holds, reserves a
 ### STEP 027: Migration for payout bank accounts and bank change requests tables
 Chat line: Implement STEP 027 only: Migration for payout bank accounts and bank change requests tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 027: Migration for payout bank accounts and bank change requests tables", push, and create docs/handoffs/STEP_027_COMPLETED.md.
 
-### STEP 028: Migration for KYC submissions, documents and review decisions tables
-Chat line: Implement STEP 028 only: Migration for KYC submissions, documents and review decisions tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 028: Migration for KYC submissions, documents and review decisions tables", push, and create docs/handoffs/STEP_028_COMPLETED.md.
+### STEP 028: Migration for KYC submissions, documents, UBO records, sanctions screening records, policy acceptances and review decisions tables
+Chat line: Implement STEP 028 only: Migration for KYC submissions, documents, UBO records, sanctions screening records, policy acceptances and review decisions tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 028: Migration for KYC submissions, documents, UBO records, sanctions screening records, policy acceptances and review decisions tables", push, and create docs/handoffs/STEP_028_COMPLETED.md.
 
 ### STEP 029: Migration for sub-merchant provisioning records table
 Chat line: Implement STEP 029 only: Migration for sub-merchant provisioning records table. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 029: Migration for sub-merchant provisioning records table", push, and create docs/handoffs/STEP_029_COMPLETED.md.
@@ -139,8 +164,8 @@ Chat line: Implement STEP 030 only: Migration for card blacklist and velocity co
 ### STEP 031: Migration for files and storage records table
 Chat line: Implement STEP 031 only: Migration for files and storage records table. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 031: Migration for files and storage records table", push, and create docs/handoffs/STEP_031_COMPLETED.md.
 
-### STEP 032: Migration for email settings, templates and send logs tables
-Chat line: Implement STEP 032 only: Migration for email settings, templates and send logs tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 032: Migration for email settings, templates and send logs tables", push, and create docs/handoffs/STEP_032_COMPLETED.md.
+### STEP 032: Migration for email settings, templates, send logs, support tickets, CMS and blog pages, company accounting and compliance calendar tables
+Chat line: Implement STEP 032 only: Migration for email settings, templates, send logs, support tickets, CMS and blog pages, company accounting and compliance calendar tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 032: Migration for email settings, templates, send logs, support tickets, CMS and blog pages, company accounting and compliance calendar tables", push, and create docs/handoffs/STEP_032_COMPLETED.md.
 
 ### STEP 033: RLS default-deny policies for tenant tables batch one
 Chat line: Implement STEP 033 only: RLS default-deny policies for tenant tables batch one. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 033: RLS default-deny policies for tenant tables batch one", push, and create docs/handoffs/STEP_033_COMPLETED.md.
@@ -151,16 +176,16 @@ Chat line: Implement STEP 034 only: RLS default-deny policies for payment and le
 ### STEP 035: RLS policies for office roles and audit log immutability
 Chat line: Implement STEP 035 only: RLS policies for office roles and audit log immutability. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 035: RLS policies for office roles and audit log immutability", push, and create docs/handoffs/STEP_035_COMPLETED.md.
 
-### STEP 036: Audit hash chain database function and sequence trigger
-Chat line: Implement STEP 036 only: Audit hash chain database function and sequence trigger. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 036: Audit hash chain database function and sequence trigger", push, and create docs/handoffs/STEP_036_COMPLETED.md.
+### STEP 036: Audit hash chain function, initial reference seed for countries, MCC list and policy pages, and super_admin bootstrap
+Chat line: Implement STEP 036 only: Audit hash chain function, initial reference seed for countries, MCC list and policy pages, and super_admin bootstrap. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 036: Audit hash chain function, initial reference seed for countries, MCC list and policy pages, and super_admin bootstrap", push, and create docs/handoffs/STEP_036_COMPLETED.md.
 
 ## Authentication and Session Security
 
 ### STEP 037: Supabase Auth client and server helpers with typed session access
 Chat line: Implement STEP 037 only: Supabase Auth client and server helpers with typed session access. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 037: Supabase Auth client and server helpers with typed session access", push, and create docs/handoffs/STEP_037_COMPLETED.md.
 
-### STEP 038: Signup flow with email verification and Turnstile
-Chat line: Implement STEP 038 only: Signup flow with email verification and Turnstile. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 038: Signup flow with email verification and Turnstile", push, and create docs/handoffs/STEP_038_COMPLETED.md.
+### STEP 038: Signup flow with email verification, Turnstile and versioned policy acceptance recording
+Chat line: Implement STEP 038 only: Signup flow with email verification, Turnstile and versioned policy acceptance recording. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 038: Signup flow with email verification, Turnstile and versioned policy acceptance recording", push, and create docs/handoffs/STEP_038_COMPLETED.md.
 
 ### STEP 039: Login flow with Turnstile and device registration
 Chat line: Implement STEP 039 only: Login flow with Turnstile and device registration. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 039: Login flow with Turnstile and device registration", push, and create docs/handoffs/STEP_039_COMPLETED.md.
@@ -256,8 +281,8 @@ Chat line: Implement STEP 067 only: Velocity counter service for card tokens and
 ### STEP 068: Admin layout shell with sidebar, topbar and role based navigation
 Chat line: Implement STEP 068 only: Admin layout shell with sidebar, topbar and role based navigation. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 068: Admin layout shell with sidebar, topbar and role based navigation", push, and create docs/handoffs/STEP_068_COMPLETED.md.
 
-### STEP 069: super_admin dashboard home with operations metric cards
-Chat line: Implement STEP 069 only: super_admin dashboard home with operations metric cards. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 069: super_admin dashboard home with operations metric cards", push, and create docs/handoffs/STEP_069_COMPLETED.md.
+### STEP 069: super_admin dashboard home and gateway management page with key test, enable, disable and NMI mode controls
+Chat line: Implement STEP 069 only: super_admin dashboard home and gateway management page with key test, enable, disable and NMI mode controls. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 069: super_admin dashboard home and gateway management page with key test, enable, disable and NMI mode controls", push, and create docs/handoffs/STEP_069_COMPLETED.md.
 
 ### STEP 070: CEO dashboard home with approval queues
 Chat line: Implement STEP 070 only: CEO dashboard home with approval queues. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 070: CEO dashboard home with approval queues", push, and create docs/handoffs/STEP_070_COMPLETED.md.
@@ -265,17 +290,17 @@ Chat line: Implement STEP 070 only: CEO dashboard home with approval queues. Fol
 ### STEP 071: Permission delegation screen for super_admin
 Chat line: Implement STEP 071 only: Permission delegation screen for super_admin. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 071: Permission delegation screen for super_admin", push, and create docs/handoffs/STEP_071_COMPLETED.md.
 
-### STEP 072: CEO confirmation step component for large actions
-Chat line: Implement STEP 072 only: CEO confirmation step component for large actions. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 072: CEO confirmation step component for large actions", push, and create docs/handoffs/STEP_072_COMPLETED.md.
+### STEP 072: CEO confirmation step for large payout release, platform fee change, reserve release and country enable actions
+Chat line: Implement STEP 072 only: CEO confirmation step for large payout release, platform fee change, reserve release and country enable actions. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 072: CEO confirmation step for large payout release, platform fee change, reserve release and country enable actions", push, and create docs/handoffs/STEP_072_COMPLETED.md.
 
 ### STEP 073: Country enable and disable management screen
 Chat line: Implement STEP 073 only: Country enable and disable management screen. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 073: Country enable and disable management screen", push, and create docs/handoffs/STEP_073_COMPLETED.md.
 
-### STEP 074: Platform general settings screen: logo, name and contact information
-Chat line: Implement STEP 074 only: Platform general settings screen: logo, name and contact information. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 074: Platform general settings screen: logo, name and contact information", push, and create docs/handoffs/STEP_074_COMPLETED.md.
+### STEP 074: Platform general settings screen with compliance calendar for renewals and expiry alerts
+Chat line: Implement STEP 074 only: Platform general settings screen with compliance calendar for renewals and expiry alerts. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 074: Platform general settings screen with compliance calendar for renewals and expiry alerts", push, and create docs/handoffs/STEP_074_COMPLETED.md.
 
-### STEP 075: Announcement popup component with per-user dismiss record
-Chat line: Implement STEP 075 only: Announcement popup component with per-user dismiss record. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 075: Announcement popup component with per-user dismiss record", push, and create docs/handoffs/STEP_075_COMPLETED.md.
+### STEP 075: Announcement composer, publish flow and popup component with per-user dismiss record
+Chat line: Implement STEP 075 only: Announcement composer, publish flow and popup component with per-user dismiss record. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 075: Announcement composer, publish flow and popup component with per-user dismiss record", push, and create docs/handoffs/STEP_075_COMPLETED.md.
 
 ### STEP 076: Audit log viewer with filters for office roles
 Chat line: Implement STEP 076 only: Audit log viewer with filters for office roles. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 076: Audit log viewer with filters for office roles", push, and create docs/handoffs/STEP_076_COMPLETED.md.
@@ -303,8 +328,8 @@ Chat line: Implement STEP 082 only: Business address and contact information sec
 ### STEP 083: One-time business profile that feeds every processor
 Chat line: Implement STEP 083 only: One-time business profile that feeds every processor. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 083: One-time business profile that feeds every processor", push, and create docs/handoffs/STEP_083_COMPLETED.md.
 
-### STEP 084: KYC document upload: identity and business documents
-Chat line: Implement STEP 084 only: KYC document upload: identity and business documents. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 084: KYC document upload: identity and business documents", push, and create docs/handoffs/STEP_084_COMPLETED.md.
+### STEP 084: KYC document upload with UBO capture and sanctions and PEP screening execution and result record
+Chat line: Implement STEP 084 only: KYC document upload with UBO capture and sanctions and PEP screening execution and result record. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 084: KYC document upload with UBO capture and sanctions and PEP screening execution and result record", push, and create docs/handoffs/STEP_084_COMPLETED.md.
 
 ### STEP 085: Address proof upload: utility bill with 3 month issue rule
 Chat line: Implement STEP 085 only: Address proof upload: utility bill with 3 month issue rule. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 085: Address proof upload: utility bill with 3 month issue rule", push, and create docs/handoffs/STEP_085_COMPLETED.md.
@@ -348,16 +373,16 @@ Chat line: Implement STEP 097 only: Extra document request flow from provider to
 ### STEP 098: Duplicate identity check at signup, KYC and provisioning stages
 Chat line: Implement STEP 098 only: Duplicate identity check at signup, KYC and provisioning stages. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 098: Duplicate identity check at signup, KYC and provisioning stages", push, and create docs/handoffs/STEP_098_COMPLETED.md.
 
-### STEP 099: Merchant suspension and reactivation document flow
-Chat line: Implement STEP 099 only: Merchant suspension and reactivation document flow. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 099: Merchant suspension and reactivation document flow", push, and create docs/handoffs/STEP_099_COMPLETED.md.
+### STEP 099: Merchant suspension, reactivation and account closure flow with saved card token deletion and chargeback-period fund hold
+Chat line: Implement STEP 099 only: Merchant suspension, reactivation and account closure flow with saved card token deletion and chargeback-period fund hold. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 099: Merchant suspension, reactivation and account closure flow with saved card token deletion and chargeback-period fund hold", push, and create docs/handoffs/STEP_099_COMPLETED.md.
 
 ## File Storage Layer
 
-### STEP 100: Storage adapter interface with upload, download, delete and signed URL
-Chat line: Implement STEP 100 only: Storage adapter interface with upload, download, delete and signed URL. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 100: Storage adapter interface with upload, download, delete and signed URL", push, and create docs/handoffs/STEP_100_COMPLETED.md.
+### STEP 100: Storage adapter interface with upload, download, delete, signed URL and file access audit logging
+Chat line: Implement STEP 100 only: Storage adapter interface with upload, download, delete, signed URL and file access audit logging. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 100: Storage adapter interface with upload, download, delete, signed URL and file access audit logging", push, and create docs/handoffs/STEP_100_COMPLETED.md.
 
-### STEP 101: Host environment storage adapter implementation
-Chat line: Implement STEP 101 only: Host environment storage adapter implementation. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 101: Host environment storage adapter implementation", push, and create docs/handoffs/STEP_101_COMPLETED.md.
+### STEP 101: S3-compatible object storage adapter implementation configured by environment variables for any hosting
+Chat line: Implement STEP 101 only: S3-compatible object storage adapter implementation configured by environment variables for any hosting. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 101: S3-compatible object storage adapter implementation configured by environment variables for any hosting", push, and create docs/handoffs/STEP_101_COMPLETED.md.
 
 ### STEP 102: AES-256-GCM file encryption before upload
 Chat line: Implement STEP 102 only: AES-256-GCM file encryption before upload. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 102: AES-256-GCM file encryption before upload", push, and create docs/handoffs/STEP_102_COMPLETED.md.
@@ -403,8 +428,8 @@ Chat line: Implement STEP 114 only: Decimal invoice calculation engine with disc
 ### STEP 115: Invoice numbering service per merchant
 Chat line: Implement STEP 115 only: Invoice numbering service per merchant. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 115: Invoice numbering service per merchant", push, and create docs/handoffs/STEP_115_COMPLETED.md.
 
-### STEP 116: Invoice status workflow transitions with audit entries
-Chat line: Implement STEP 116 only: Invoice status workflow transitions with audit entries. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 116: Invoice status workflow transitions with audit entries", push, and create docs/handoffs/STEP_116_COMPLETED.md.
+### STEP 116: Invoice status workflow transitions with paid invoice edit lock and audit entries
+Chat line: Implement STEP 116 only: Invoice status workflow transitions with paid invoice edit lock and audit entries. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 116: Invoice status workflow transitions with paid invoice edit lock and audit entries", push, and create docs/handoffs/STEP_116_COMPLETED.md.
 
 ### STEP 117: Invoice PDF generation as a background job
 Chat line: Implement STEP 117 only: Invoice PDF generation as a background job. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 117: Invoice PDF generation as a background job", push, and create docs/handoffs/STEP_117_COMPLETED.md.
@@ -518,8 +543,8 @@ Chat line: Implement STEP 151 only: NMI shared server payment module on the REST
 ### STEP 152: NMI mode switch with pre-switch test and audit logging
 Chat line: Implement STEP 152 only: NMI mode switch with pre-switch test and audit logging. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 152: NMI mode switch with pre-switch test and audit logging", push, and create docs/handoffs/STEP_152_COMPLETED.md.
 
-### STEP 153: NMI sub-merchant provisioning through the gateway
-Chat line: Implement STEP 153 only: NMI sub-merchant provisioning through the gateway. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 153: NMI sub-merchant provisioning through the gateway", push, and create docs/handoffs/STEP_153_COMPLETED.md.
+### STEP 153: NMI sub-merchant provisioning through the gateway with signature verified idempotent webhooks
+Chat line: Implement STEP 153 only: NMI sub-merchant provisioning through the gateway with signature verified idempotent webhooks. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 153: NMI sub-merchant provisioning through the gateway with signature verified idempotent webhooks", push, and create docs/handoffs/STEP_153_COMPLETED.md.
 
 ### STEP 154: Payoneer documentation verification and sandbox notes recording
 Chat line: Implement STEP 154 only: Payoneer documentation verification and sandbox notes recording. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 154: Payoneer documentation verification and sandbox notes recording", push, and create docs/handoffs/STEP_154_COMPLETED.md.
@@ -527,8 +552,8 @@ Chat line: Implement STEP 154 only: Payoneer documentation verification and sand
 ### STEP 155: Payoneer encrypted key configuration and connection test
 Chat line: Implement STEP 155 only: Payoneer encrypted key configuration and connection test. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 155: Payoneer encrypted key configuration and connection test", push, and create docs/handoffs/STEP_155_COMPLETED.md.
 
-### STEP 156: Payoneer automatic bank linking from merchant profile
-Chat line: Implement STEP 156 only: Payoneer automatic bank linking from merchant profile. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 156: Payoneer automatic bank linking from merchant profile", push, and create docs/handoffs/STEP_156_COMPLETED.md.
+### STEP 156: Payoneer automatic bank linking, payout execution and status handling
+Chat line: Implement STEP 156 only: Payoneer automatic bank linking, payout execution and status handling. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 156: Payoneer automatic bank linking, payout execution and status handling", push, and create docs/handoffs/STEP_156_COMPLETED.md.
 
 ### STEP 157: Rainforest documentation verification and sandbox notes recording
 Chat line: Implement STEP 157 only: Rainforest documentation verification and sandbox notes recording. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 157: Rainforest documentation verification and sandbox notes recording", push, and create docs/handoffs/STEP_157_COMPLETED.md.
@@ -539,8 +564,8 @@ Chat line: Implement STEP 158 only: Rainforest encrypted key configuration and c
 ### STEP 159: Rainforest payment acceptance integration
 Chat line: Implement STEP 159 only: Rainforest payment acceptance integration. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 159: Rainforest payment acceptance integration", push, and create docs/handoffs/STEP_159_COMPLETED.md.
 
-### STEP 160: Rainforest sub-merchant onboarding integration
-Chat line: Implement STEP 160 only: Rainforest sub-merchant onboarding integration. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 160: Rainforest sub-merchant onboarding integration", push, and create docs/handoffs/STEP_160_COMPLETED.md.
+### STEP 160: Rainforest sub-merchant onboarding integration with signature verified idempotent webhooks
+Chat line: Implement STEP 160 only: Rainforest sub-merchant onboarding integration with signature verified idempotent webhooks. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 160: Rainforest sub-merchant onboarding integration with signature verified idempotent webhooks", push, and create docs/handoffs/STEP_160_COMPLETED.md.
 
 ### STEP 161: Stripe Connect documentation verification and sandbox notes recording
 Chat line: Implement STEP 161 only: Stripe Connect documentation verification and sandbox notes recording. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 161: Stripe Connect documentation verification and sandbox notes recording", push, and create docs/handoffs/STEP_161_COMPLETED.md.
@@ -551,8 +576,8 @@ Chat line: Implement STEP 162 only: Stripe Connect encrypted key configuration a
 ### STEP 163: Stripe Connect connected account creation after KYC approval
 Chat line: Implement STEP 163 only: Stripe Connect connected account creation after KYC approval. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 163: Stripe Connect connected account creation after KYC approval", push, and create docs/handoffs/STEP_163_COMPLETED.md.
 
-### STEP 164: Stripe Connect charges with platform fee split
-Chat line: Implement STEP 164 only: Stripe Connect charges with platform fee split. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 164: Stripe Connect charges with platform fee split", push, and create docs/handoffs/STEP_164_COMPLETED.md.
+### STEP 164: Stripe Connect charges with platform fee split, payouts and signature verified idempotent webhooks
+Chat line: Implement STEP 164 only: Stripe Connect charges with platform fee split, payouts and signature verified idempotent webhooks. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 164: Stripe Connect charges with platform fee split, payouts and signature verified idempotent webhooks", push, and create docs/handoffs/STEP_164_COMPLETED.md.
 
 ### STEP 165: Airwallex documentation verification and sandbox notes recording
 Chat line: Implement STEP 165 only: Airwallex documentation verification and sandbox notes recording. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 165: Airwallex documentation verification and sandbox notes recording", push, and create docs/handoffs/STEP_165_COMPLETED.md.
@@ -611,8 +636,8 @@ Chat line: Implement STEP 180 only: Tax line storage on invoice and payment reco
 ### STEP 181: Tokenized invoice page with paid state and receipt view
 Chat line: Implement STEP 181 only: Tokenized invoice page with paid state and receipt view. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 181: Tokenized invoice page with paid state and receipt view", push, and create docs/handoffs/STEP_181_COMPLETED.md.
 
-### STEP 182: Tokenized estimate page with signature approval
-Chat line: Implement STEP 182 only: Tokenized estimate page with signature approval. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 182: Tokenized estimate page with signature approval", push, and create docs/handoffs/STEP_182_COMPLETED.md.
+### STEP 182: Tokenized estimate page with signature approval, decline and expiry void handling
+Chat line: Implement STEP 182 only: Tokenized estimate page with signature approval, decline and expiry void handling. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 182: Tokenized estimate page with signature approval, decline and expiry void handling", push, and create docs/handoffs/STEP_182_COMPLETED.md.
 
 ### STEP 183: Payment page with provider hosted secure fields
 Chat line: Implement STEP 183 only: Payment page with provider hosted secure fields. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 183: Payment page with provider hosted secure fields", push, and create docs/handoffs/STEP_183_COMPLETED.md.
@@ -635,8 +660,8 @@ Chat line: Implement STEP 188 only: Card and IP velocity limit enforcement on pa
 ### STEP 189: Part payment on invoice link limited to remaining amount
 Chat line: Implement STEP 189 only: Part payment on invoice link limited to remaining amount. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 189: Part payment on invoice link limited to remaining amount", push, and create docs/handoffs/STEP_189_COMPLETED.md.
 
-### STEP 190: General payment link creation and hosted checkout page
-Chat line: Implement STEP 190 only: General payment link creation and hosted checkout page. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 190: General payment link creation and hosted checkout page", push, and create docs/handoffs/STEP_190_COMPLETED.md.
+### STEP 190: General payment link creation, hosted checkout page and merchant token revoke and reissue controls
+Chat line: Implement STEP 190 only: General payment link creation, hosted checkout page and merchant token revoke and reissue controls. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 190: General payment link creation, hosted checkout page and merchant token revoke and reissue controls", push, and create docs/handoffs/STEP_190_COMPLETED.md.
 
 ## Refunds, Disputes and Evidence
 
@@ -821,13 +846,13 @@ Chat line: Implement STEP 245 only: Caching for public pages and dashboard summa
 Chat line: Implement STEP 246 only: Image and font optimization and lazy loading pass. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 246: Image and font optimization and lazy loading pass", push, and create docs/handoffs/STEP_246_COMPLETED.md.
 
 ### STEP 247: Netlify deployment configuration, environment verification, backup and restore rehearsal record
-Chat line: Implement STEP 247 only: Netlify deployment configuration, environment verification, backup and restore rehearsal record. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 247: Netlify deployment configuration and environment checklist", push, and create docs/handoffs/STEP_247_COMPLETED.md.
+Chat line: Implement STEP 247 only: Netlify deployment configuration, environment verification, backup and restore rehearsal record. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 247: Netlify deployment configuration, environment verification, backup and restore rehearsal record", push, and create docs/handoffs/STEP_247_COMPLETED.md.
 
 ### STEP 248: Vercel deployment configuration, monitoring and alerting wiring with Sentry and uptime checks
-Chat line: Implement STEP 248 only: Vercel deployment configuration, monitoring and alerting wiring with Sentry and uptime checks. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 248: Vercel deployment configuration and environment checklist", push, and create docs/handoffs/STEP_248_COMPLETED.md.
+Chat line: Implement STEP 248 only: Vercel deployment configuration, monitoring and alerting wiring with Sentry and uptime checks. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 248: Vercel deployment configuration, monitoring and alerting wiring with Sentry and uptime checks", push, and create docs/handoffs/STEP_248_COMPLETED.md.
 
 ### STEP 249: Background job schedules registration and verification
 Chat line: Implement STEP 249 only: Background job schedules registration and verification. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 249: Background job schedules registration and verification", push, and create docs/handoffs/STEP_249_COMPLETED.md.
 
 ### STEP 250: Final staging verification, production go-live gate checklist and launch record document
-Chat line: Implement STEP 250 only: Final staging verification, production go-live gate checklist and launch record document. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 250: Final build, typecheck and lint verification with go-live checklist document", push, and create docs/handoffs/STEP_250_COMPLETED.md.
+Chat line: Implement STEP 250 only: Final staging verification, production go-live gate checklist and launch record document. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 250: Final staging verification, production go-live gate checklist and launch record document", push, and create docs/handoffs/STEP_250_COMPLETED.md.

@@ -214,7 +214,7 @@
 
 ## 21. File Storage
 - Text and structured data live in the platform database.
-- Files live in the storage of the environment where the project is hosted. The storage layer is built with adapters so the hosting environment can change without rewriting the core.
+- Files live in S3-compatible object storage configured by environment variables, reached through the storage adapter layer, so the same build runs on Vercel, Netlify or any other hosting without rewriting the core. Server-local disk is never used for stored files.
 - Every file is AES-256-GCM encrypted before upload.
 - Every file record stores storage_provider, hash, size, type and company.
 - File type and magic byte verification and file size limits apply.
@@ -298,7 +298,7 @@
 ## 30. External Services Setup Required for Live Operation
 - Supabase project for each environment with daily backups enabled.
 - Hosting project on Vercel and on Netlify, both connected to the same repository with environment variables set per environment.
-- Storage configured in the hosting environment for encrypted file storage with tenant separated paths.
+- S3-compatible object storage configured by environment variables for encrypted file storage with tenant separated paths, usable from Vercel, Netlify or any hosting.
 - Cloudflare Turnstile site and secret keys for the production domain.
 - Sentry project with server and client error reporting and release tracking.
 - Email sending domain with SPF, DKIM and DMARC records published and verified, plus a separate subdomain for marketing sending when volume grows.

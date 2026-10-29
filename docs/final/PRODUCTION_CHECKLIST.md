@@ -8,7 +8,7 @@ together with FEATURE_LIST.md before the final STEPs.
 ## 1. Accounts and Services to Prepare
 - Supabase projects: development, staging, production, each with backups enabled.
 - Hosting projects on Vercel and Netlify connected to this repository.
-- File storage in the hosting environment with tenant separated paths.
+- S3-compatible object storage (configured by environment variables) with tenant separated paths. Server-local disk is never used for stored files.
 - Cloudflare Turnstile keys for the production domain.
 - Sentry project with alert rules to the office team.
 - Email provider account (SMTP or API based) with a verified sending domain.
@@ -81,3 +81,15 @@ They are entered in the super admin screens, encrypted at rest and shown only ma
 - Monthly: processor bills matched, platform metrics reviewed, pricing version check.
 - Quarterly: access review for all office roles, key rotation review, restore rehearsal.
 - Yearly: PCI attestation renewal, cyber insurance renewal, policy version review.
+
+## 8. Deployment Rollback Procedure
+- Keep the previous production deployment available on the hosting platform at all times.
+- On a failed release: first switch traffic back to the previous deployment on the
+  hosting platform, then run the rollback of any migration applied by the failed release,
+  then record the incident on the status page and in the launch record.
+- A release that includes a migration is rehearsed on staging with its rollback before
+  it is applied to production.
+
+## 9. Environment Variable Reconciliation (checked at STEP 250)
+- Every name in Section 2 of this checklist exists in .env.example and in the validated
+  environment schema, and every variable in .env.example is listed in Section 2.

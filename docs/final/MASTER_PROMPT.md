@@ -32,7 +32,7 @@ completely, with production quality.
 
 ## Stack
 Next.js 14+ App Router with Server Components, TypeScript strict, Tailwind CSS, shadcn/ui,
-Supabase PostgreSQL with Auth and RLS, storage adapters for the hosting environment,
+Supabase PostgreSQL with Auth and RLS, S3-compatible object storage through the storage adapter layer,
 payment adapters for NMI, Payoneer, Rainforest, Stripe Connect and Airwallex,
 TaxCloud for United States sales tax calculation, KYC adapters for Jumio, Didit and Sumsub
 with manual KYC as the running mode until one is connected and activated,
@@ -64,10 +64,15 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
 - Migrations are append-only, numbered in order, never edited after commit, each with a rollback.
 - package.json is integrator-owned. When a package is needed, write a package request into
   the handoff file instead of editing package.json.
+- STEP 001 creates the docs/handoffs/ folder. Every chat copies
+  docs/final/HANDOFF_TEMPLATE.md to docs/handoffs/STEP_NNN_COMPLETED.md and fills every
+  field, including the acceptance checklist for that STEP, files created, migrations added,
+  environment variables added, packages requested, proof results and the next STEP dependency.
+- Steps run strictly in numeric order. A STEP depends on every earlier STEP in its own
+  category and on the handoff files of those STEPs. A later category may start only when
+  the previous category handoff files all exist.
 - At the end of the chat: run typecheck and lint, commit with the message format
-  "STEP NNN: title", push the branch, and create docs/handoffs/STEP_NNN_COMPLETED.md listing
-  files created, migrations added, environment variables added, packages requested and the
-  next STEP dependency.
+  "STEP NNN: title", push the branch, and leave the completed handoff file in the same commit.
 - Never start STEP N+1 before the handoff of STEP N exists.
 - If anything in the STEP conflicts with FEATURE_LIST.md, FEATURE_LIST.md wins and the
   conflict must be written into the handoff file.
@@ -91,3 +96,13 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
   queries, no queries in loops, background jobs for heavy work.
 - The final STEP verifies the full go-live gate list in FEATURE_LIST.md section 33 on
   staging before any production switch is recommended.
+
+## Acceptance Checklist Required in Every Handoff
+- The exact behaviours named in the STEP title were exercised manually on staging or in
+  sandbox and the observed result is written in the handoff.
+- For UI STEPs: desktop and mobile widths were checked, keyboard navigation works, and
+  text is readable in light and dark themes.
+- For API STEPs: success, validation failure, unauthorized and cross-tenant requests were
+  exercised and the results are written in the handoff.
+- For money STEPs: the ledger entries created by the flow are shown balanced in the handoff.
+- A STEP is not complete while any item of this checklist is unproven.
