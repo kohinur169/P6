@@ -73,7 +73,14 @@
 ## 6. Payment Processors (Five)
 - One adapter file per provider and one registry file listing all five with a capability matrix.
 - Before coding any adapter, the coding session must read that provider's latest official documentation and sandbox or testing pages on the provider's own website in that session and record the verified URLs.
-- NMI: dual frontend modes. Collect.js is the default mode using single-use tokens from https://secure.nmi.com/token/Collect.js. Payment Component is the second mode. Only one mode is active at a time. Both modes send payment through one shared server module using the NMI REST API. Mode switching is done from the super admin dashboard, a successful test in the new mode is required before switching, and every switch is audit logged. Sub-merchant creation runs through the NMI gateway.
+- NMI: integration follows the official NMI API documentation and Collect.js rules from
+  nmi.com and docs.nmi.com. Card data is collected only through Collect.js hosted fields
+  (https://secure.nmi.com/token/Collect.js), which returns a payment token to the browser.
+  Our code never reads or stores card number, expiry or CVV. The server exchanges that
+  token for payment through the NMI API exactly as the official NMI documentation
+  specifies (request format, transaction types, response codes and error handling all
+  follow the documentation read in the coding session). Sub-merchant creation runs
+  through the NMI gateway as documented by NMI.
 - Payoneer: payouts. A bank account added in the merchant profile is also added to Payoneer automatically.
 - Rainforest (rainforestpay.com): payment acceptance and sub-merchant creation.
 - Stripe Connect: connected sub-merchant account creation, charges and payouts.
