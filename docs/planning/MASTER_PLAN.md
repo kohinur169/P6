@@ -1,6 +1,13 @@
 // path: docs/planning/MASTER_PLAN.md
 # KD SOLUTION IT - Master Execution Plan (Planning Only, No Code in This Chat)
 
+> REVISION V2 (current authority): docs/planning/REVISED_FEATURE_LIST_V2.md supersedes every
+> conflicting part of this plan. Removed: WhatsApp, payroll, HR, accounting, tax reports, tax
+> filing, social automation, Google Drive, merchant staff accounts, and 11 of 16 providers.
+> Providers are now only NMI, Payoneer, Rainforest, Stripe Connect, Airwallex. Tax module is
+> removed, sales tax collection only is kept. Office roles are super_admin, ceo, compliance_kyc,
+> support, blogger. Owner has no staff option. Performance and low database pressure rules apply.
+
 ## 1. Repository State Analyzed
 - Repository contains only: README.md, MASTER_PROMPT .md (1621 lines), FEATURE_LIST.md (4911 lines).
 - No application code exists yet. This is a greenfield build.
