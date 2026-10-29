@@ -287,3 +287,45 @@
 - Public pages and rarely changing data are cached. Dashboard summaries use short-lived cache.
 - Light runtime on Vercel and Netlify: PDF generation, email, webhook processing and sub-merchant provisioning run as background jobs. Request handlers validate, write minimal rows and enqueue.
 - Maximum page size for list APIs is set in config. Bundle and Core Web Vitals budgets are recorded.
+
+## 29. Production Environments and Secrets
+- Three separated environments: development, staging and production. Each environment has its own database, storage, provider keys and email settings. Test mode data never mixes with production data.
+- Every secret lives only in environment variables of the hosting platform. No secret is stored in the repository, in the database in plain form, or in any log.
+- An .env.example file lists every required environment variable by name with a short description and no real values. The application refuses to start when a required variable is missing.
+- Provider keys, email secrets and TaxCloud credentials entered in admin screens are AES-256-GCM encrypted at rest and shown only masked.
+- Key rotation procedure exists for provider keys and email secrets: add new key, run connection test, activate, then remove the old key. Every rotation is audit logged.
+
+## 30. External Services Setup Required for Live Operation
+- Supabase project for each environment with daily backups enabled.
+- Hosting project on Vercel and on Netlify, both connected to the same repository with environment variables set per environment.
+- Storage configured in the hosting environment for encrypted file storage with tenant separated paths.
+- Cloudflare Turnstile site and secret keys for the production domain.
+- Sentry project with server and client error reporting and release tracking.
+- Email sending domain with SPF, DKIM and DMARC records published and verified, plus a separate subdomain for marketing sending when volume grows.
+- Master platform accounts with the five payment providers, with sandbox keys for staging and live keys for production, and webhook endpoints registered per provider.
+- TaxCloud account connection available for merchants who enable United States sales tax collection.
+- Automatic KYC provider accounts (Jumio, Didit, Sumsub) connectable from super admin settings when the business decides to activate one.
+- Shopify app created and approved so merchants can install it and connect with credentials. WooCommerce plugin package published for merchant stores.
+- Production domain with DNS, TLS certificates and HTTPS enforced on every page.
+
+## 31. Backup, Recovery and Retention Operations
+- Database backups run daily with point-in-time recovery where the platform supports it.
+- File storage is versioned or backed up so an accidentally deleted file can be recovered.
+- A restore rehearsal is performed on staging before launch and on a recurring schedule, and the result is recorded.
+- Retention jobs enforce the 7 year record retention rule and then remove expired operational data according to the retention settings.
+- Audit log integrity roots are exported on schedule so tampering can be detected.
+
+## 32. Monitoring, Alerting and Incident Operations
+- Error monitoring through Sentry with alert rules to the office team.
+- Uptime monitoring of the public site, the payment pages and the webhook endpoints.
+- Background job monitoring: a failed or stalled job raises an office alert.
+- Payment success rate, webhook failure count, payout failure count and reconciliation mismatch count are visible to super_admin.
+- The public status page reflects real service state and incidents are announced there and by email.
+- Structured logs carry request identifiers so any payment can be traced from request to ledger entry.
+
+## 33. Release and Go-Live Gates
+- A STEP is complete only when typecheck, lint and production build pass for the touched area.
+- Provider integrations are complete only after a successful sandbox payment, refund and webhook cycle is recorded in the handoff file.
+- Database changes are complete only after the migration and its rollback both run cleanly on staging.
+- Security sensitive features are complete only after the audit log entries for their actions are verified in staging.
+- Go-live requires: production environment variables verified, provider live keys tested with the built-in connection test, email test received, Turnstile verified on the production domain, backup restore rehearsed, status page published and the first super_admin account created with 2FA enforced.

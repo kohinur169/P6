@@ -5,6 +5,7 @@
 - docs/final/FEATURE_LIST.md: the single complete feature list. This is the only scope document.
 - docs/final/MASTER_PROMPT.md: the rules every coding chat must follow.
 - docs/final/STEP_PLAN_250.md: the project split into 250 small steps, one step per chat.
+- docs/final/PRODUCTION_CHECKLIST.md: accounts, environment variables, email domain, payment live readiness and the go-live sequence needed to run the finished project as a business.
 - docs/handoffs/: one completion file per finished STEP, created by the chat that finished it.
 
 ## How the owner runs the build

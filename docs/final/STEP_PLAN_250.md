@@ -13,6 +13,12 @@
   docs/handoffs/STEP_NNN_COMPLETED.md before the chat ends.
 - One chat finishes exactly one STEP. STEP N+1 never starts before the handoff of STEP N exists.
 
+## Production Gate for Every STEP
+Every STEP follows the Production Readiness Rules in docs/final/MASTER_PROMPT.md:
+typecheck, lint and build must pass; migrations must prove rollback; money flows must
+prove balanced ledger entries; provider work must prove a sandbox cycle; new environment
+variables must be added to .env.example. The handoff file of each STEP records these proofs.
+
 ## Coverage Map (feature list section to STEP range)
 - Platform Foundations: STEP 001-012 and STEP 057-068.
 - Database and RLS for every feature area: STEP 013-037.
@@ -814,14 +820,14 @@ Chat line: Implement STEP 245 only: Caching for public pages and dashboard summa
 ### STEP 246: Image and font optimization and lazy loading pass
 Chat line: Implement STEP 246 only: Image and font optimization and lazy loading pass. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 246: Image and font optimization and lazy loading pass", push, and create docs/handoffs/STEP_246_COMPLETED.md.
 
-### STEP 247: Netlify deployment configuration and environment checklist
-Chat line: Implement STEP 247 only: Netlify deployment configuration and environment checklist. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 247: Netlify deployment configuration and environment checklist", push, and create docs/handoffs/STEP_247_COMPLETED.md.
+### STEP 247: Netlify deployment configuration, environment verification, backup and restore rehearsal record
+Chat line: Implement STEP 247 only: Netlify deployment configuration, environment verification, backup and restore rehearsal record. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 247: Netlify deployment configuration and environment checklist", push, and create docs/handoffs/STEP_247_COMPLETED.md.
 
-### STEP 248: Vercel deployment configuration and environment checklist
-Chat line: Implement STEP 248 only: Vercel deployment configuration and environment checklist. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 248: Vercel deployment configuration and environment checklist", push, and create docs/handoffs/STEP_248_COMPLETED.md.
+### STEP 248: Vercel deployment configuration, monitoring and alerting wiring with Sentry and uptime checks
+Chat line: Implement STEP 248 only: Vercel deployment configuration, monitoring and alerting wiring with Sentry and uptime checks. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 248: Vercel deployment configuration and environment checklist", push, and create docs/handoffs/STEP_248_COMPLETED.md.
 
 ### STEP 249: Background job schedules registration and verification
 Chat line: Implement STEP 249 only: Background job schedules registration and verification. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 249: Background job schedules registration and verification", push, and create docs/handoffs/STEP_249_COMPLETED.md.
 
-### STEP 250: Final build, typecheck and lint verification with go-live checklist document
-Chat line: Implement STEP 250 only: Final build, typecheck and lint verification with go-live checklist document. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 250: Final build, typecheck and lint verification with go-live checklist document", push, and create docs/handoffs/STEP_250_COMPLETED.md.
+### STEP 250: Final staging verification, production go-live gate checklist and launch record document
+Chat line: Implement STEP 250 only: Final staging verification, production go-live gate checklist and launch record document. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 250: Final build, typecheck and lint verification with go-live checklist document", push, and create docs/handoffs/STEP_250_COMPLETED.md.

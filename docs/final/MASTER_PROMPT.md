@@ -71,3 +71,23 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
 - Never start STEP N+1 before the handoff of STEP N exists.
 - If anything in the STEP conflicts with FEATURE_LIST.md, FEATURE_LIST.md wins and the
   conflict must be written into the handoff file.
+
+## Production Readiness Rules (apply to every STEP)
+- Definition of done for every STEP: the implemented scope works end to end, typecheck
+  passes, lint passes, and the production build passes for the touched area. A STEP that
+  fails any of these is not complete and its handoff must say so.
+- Every STEP that adds a database migration must run the migration and its rollback on a
+  clean database and record the result in the handoff file.
+- Every STEP that touches money must prove balanced double-entry ledger postings for its
+  flows and record the proof in the handoff file.
+- Every STEP that touches a provider must complete a sandbox cycle (payment, refund where
+  supported, and webhook delivery) and record the provider documentation URLs, the sandbox
+  URLs and the sandbox result in the handoff file.
+- Every STEP that adds an environment variable must add it to .env.example with a
+  description and must read it through the validated environment schema only.
+- No secret, key, token or credential may appear in code, commits, logs, error messages
+  or handoff files.
+- Every STEP must keep the performance rules: paginated lists, selected columns, joined
+  queries, no queries in loops, background jobs for heavy work.
+- The final STEP verifies the full go-live gate list in FEATURE_LIST.md section 33 on
+  staging before any production switch is recommended.
