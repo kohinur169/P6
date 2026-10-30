@@ -32,7 +32,7 @@ completely, with production quality.
 
 ## Stack
 Next.js 14+ App Router with Server Components, TypeScript strict, Tailwind CSS, shadcn/ui,
-Supabase PostgreSQL with Auth and RLS, S3-compatible object storage through the storage adapter layer,
+Supabase PostgreSQL with Auth and RLS, Supabase Storage and Amazon S3 object storage through the storage adapter layer selected by environment configuration,
 payment adapters for NMI, Payoneer, Rainforest, Stripe Connect and Airwallex,
 TaxCloud for United States sales tax calculation, KYC adapters for Jumio, Didit and Sumsub
 with manual KYC as the running mode until one is connected and activated,

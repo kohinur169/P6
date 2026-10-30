@@ -203,13 +203,13 @@ Sub-steps (same chat session, in order):
 
 ## Database Schema and Row Level Security
 
-### STEP 012: Migration for companies table with tenant fields and version column
-Chat line: Implement STEP 012 only: Migration for companies table with tenant fields and version column. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 012: Migration for companies table with tenant fields and version column", push, and create docs/handoffs/STEP_012_COMPLETED.md.
+### STEP 012: Migration for companies and background jobs queue tables with tenant fields and version column
+Chat line: Implement STEP 012 only: Migration for companies and background jobs queue tables with tenant fields and version column. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 012: Migration for companies and background jobs queue tables with tenant fields and version column", push, and create docs/handoffs/STEP_012_COMPLETED.md.
 Sub-steps (same chat session, in order):
    1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
    2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
    3. Implement the database part of this STEP if any (migration plus rollback proof).
-   4. Implement the core service and logic for: Migration for companies table with tenant fields and version column.
+   4. Implement the core service and logic for: Migration for companies and background jobs queue tables with tenant fields and version column.
    5. Connect the API routes or background jobs for this STEP.
    6. Build or update the UI for this STEP where applicable and check desktop and mobile widths.
    7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.
@@ -335,13 +335,13 @@ Sub-steps (same chat session, in order):
    7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.
    8. Run typecheck, lint and build for the touched area, exercise the behaviours named in the title, then finish with one commit, push and the completed handoff file.
 
-### STEP 023: Migration for payment providers, provider keys, routing rules, webhook events and idempotency keys tables
-Chat line: Implement STEP 023 only: Migration for payment providers, provider keys, routing rules, webhook events and idempotency keys tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 023: Migration for payment providers, provider keys, routing rules, webhook events and idempotency keys tables", push, and create docs/handoffs/STEP_023_COMPLETED.md.
+### STEP 023: Migration for payment providers, provider keys, routing rules, webhook events, idempotency keys, merchant API credentials, store connections and TaxCloud connections tables
+Chat line: Implement STEP 023 only: Migration for payment providers, provider keys, routing rules, webhook events, idempotency keys, merchant API credentials, store connections and TaxCloud connections tables. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 023: Migration for payment providers, provider keys, routing rules, webhook events, idempotency keys, merchant API credentials, store connections and TaxCloud connections tables", push, and create docs/handoffs/STEP_023_COMPLETED.md.
 Sub-steps (same chat session, in order):
    1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
    2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
    3. Implement the database part of this STEP if any (migration plus rollback proof).
-   4. Implement the core service and logic for: Migration for payment providers, provider keys, routing rules, webhook events and idempotency keys tables.
+   4. Implement the core service and logic for: Migration for payment providers, provider keys, routing rules, webhook events, idempotency keys, merchant API credentials, store connections and TaxCloud connections tables.
    5. Connect the API routes or background jobs for this STEP.
    6. Build or update the UI for this STEP where applicable and check desktop and mobile widths.
    7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.
@@ -1281,13 +1281,13 @@ Sub-steps (same chat session, in order):
    7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.
    8. Run typecheck, lint and build for the touched area, exercise the behaviours named in the title, then finish with one commit, push and the completed handoff file.
 
-### STEP 101: S3-compatible object storage adapter implementation configured by environment variables for any hosting
-Chat line: Implement STEP 101 only: S3-compatible object storage adapter implementation configured by environment variables for any hosting. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 101: S3-compatible object storage adapter implementation configured by environment variables for any hosting", push, and create docs/handoffs/STEP_101_COMPLETED.md.
+### STEP 101: Supabase Storage and Amazon S3 storage adapters with adapter selection by environment configuration for Netlify, Vercel and Amazon hosting
+Chat line: Implement STEP 101 only: Supabase Storage and Amazon S3 storage adapters with adapter selection by environment configuration for Netlify, Vercel and Amazon hosting. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 101: Supabase Storage and Amazon S3 storage adapters with adapter selection by environment configuration for Netlify, Vercel and Amazon hosting", push, and create docs/handoffs/STEP_101_COMPLETED.md.
 Sub-steps (same chat session, in order):
    1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
    2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
    3. Implement the database part of this STEP if any (migration plus rollback proof).
-   4. Implement the core service and logic for: S3-compatible object storage adapter implementation configured by environment variables for any hosting.
+   4. Implement the core service and logic for: Supabase Storage and Amazon S3 storage adapters with adapter selection by environment configuration for Netlify, Vercel and Amazon hosting.
    5. Connect the API routes or background jobs for this STEP.
    6. Build or update the UI for this STEP where applicable and check desktop and mobile widths.
    7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.

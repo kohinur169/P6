@@ -8,7 +8,7 @@ together with FEATURE_LIST.md before the final STEPs.
 ## 1. Accounts and Services to Prepare
 - Supabase projects: development, staging, production, each with backups enabled.
 - Hosting projects on Vercel and Netlify connected to this repository.
-- S3-compatible object storage (configured by environment variables) with tenant separated paths. Server-local disk is never used for stored files.
+- Object storage with tenant separated paths using one active built-in adapter selected by environment configuration: Supabase Storage or Amazon S3. The application may be hosted on Netlify, Vercel or Amazon. Server-local disk is never used for stored files.
 - Cloudflare Turnstile keys for the production domain.
 - Sentry project with alert rules to the office team.
 - Email provider account (SMTP or API based) with a verified sending domain.
@@ -27,7 +27,7 @@ together with FEATURE_LIST.md before the final STEPs.
 - NEXT_PUBLIC_TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY
 - SENTRY_DSN and Sentry release settings
 - SESSION and token signing secrets for client portal links
-- STORAGE configuration values required by the hosting environment storage adapter
+- STORAGE_PROVIDER selection (supabase or s3) and the bucket, region and credential values required by the selected storage adapter
 - Webhook base URL used when registering webhook endpoints with every provider
 Provider keys, email secrets and TaxCloud credentials are not environment variables.
 They are entered in the super admin screens, encrypted at rest and shown only masked.
