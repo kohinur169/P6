@@ -1,6 +1,9 @@
 // path: docs/final/START_HERE.md
 # KD SOLUTION IT - Start Here
 
+## Preflight: prevent legacy-plan conflicts
+Before the first implementation chat, confirm that the selected implementation repository contains these six authoritative files under `docs/final/` and that its root `README.md` points to them. Do not copy the old root `FEATURE_LIST.md`, the root `MASTER_PROMPT .md` (including its space), old 80-chat README, or `docs/planning/` into the implementation repository. If conflicting legacy planning files are already present, stop and clean the repository before coding; an agent must never combine two different plans or answer a scope-choice prompt using obsolete files. If the six authoritative files are not accessible in the selected repository, do not begin implementation.
+
 ## What lives in this repository
 - docs/final/FEATURE_LIST.md: the single complete feature list. This is the only scope document.
 - docs/final/MASTER_PROMPT.md: the rules every coding chat must follow.

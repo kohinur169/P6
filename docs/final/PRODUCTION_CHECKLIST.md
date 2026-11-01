@@ -9,6 +9,7 @@ together with FEATURE_LIST.md before the final STEPs.
 - Supabase projects: development, staging, production, each with backups enabled.
 - Hosting projects on Vercel and Netlify connected to this repository.
 - Object storage with tenant separated paths using one active built-in adapter selected by environment configuration: Supabase Storage or Amazon S3. The application may be hosted on Netlify, Vercel or Amazon. Server-local disk is never used for stored files.
+- Database migrations are versioned in the repository and applied through an explicitly configured Supabase CLI workflow (for example, reviewed CI/CD running `supabase db push`) or a deliberate manual deployment. A GitHub account/repository connection by itself does not guarantee that pushed SQL migrations run against a Supabase database. Verify the target project, branch, secrets, approval gates and migration history in staging before enabling production deployment.
 - Cloudflare Turnstile keys for the production domain.
 - Sentry project with alert rules to the office team.
 - Email provider account (SMTP or API based) with a verified sending domain.
