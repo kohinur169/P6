@@ -49,27 +49,28 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
   docs/final/MASTER_PROMPT.md and docs/final/STEP_PLAN_250.md. The owner selects this
   repository when opening a coding chat, so the agent reads everything from the repository
   itself. The owner does not paste any instruction block.
-- A coding chat may implement one STEP or a user-requested consecutive range, for example
-  `Implement STEP 001-040`. Never interpret an omitted range as permission to expand scope.
-  Before coding, identify the exact requested range and verify the next uncompleted STEP.
-- A requested range is a target, not a promise that all of it can safely fit in one session.
-  Work strictly in numeric order using verified checkpoints of at most five low/medium-risk
-  STEPs. Database migrations, authentication/security, money/ledger, KYC, payout, provider,
-  and production-release STEPs are always handled as one STEP per checkpoint. A session may
-  process multiple checkpoints, but only while context, access, and verification remain sound.
+- The owner sends exactly one STEP number per message, for example `Implement STEP 001`.
+  The same chat session may contain many such messages in sequence (for example STEP 001,
+  then STEP 002, continuing through STEP 040). Never ask the owner to combine them into a
+  range, and never begin another STEP without the owner's next explicit one-STEP request.
+- Complete each requested STEP fully before waiting for the next message. After every five
+  completed low/medium-risk STEPs, give a concise progress checkpoint in the same chat. Database
+  migrations, authentication/security, money/ledger, KYC, provider, payout and production-release
+  STEPs each require their own verification checkpoint. Continue in the same session only while
+  context, access and verification remain sound; otherwise stop at the last completed handoff.
 - On receiving the request, before writing any code:
   1. Read docs/final/FEATURE_LIST.md in full.
   2. Read this MASTER_PROMPT.md in full.
-  3. Parse the exact requested STEP or consecutive STEP range. Verify it begins at STEP 001
-     if there are no handoffs, or at the next uncompleted STEP on the selected branch.
-  4. Read the exact STEP block and ownership rules for the first requested STEP.
-  5. Read the preceding handoff; for a requested range, read each newly created handoff before
-     starting the next STEP and re-check its exact STEP block and ownership rules.
-  6. Pull/inspect the latest state of the working branch before starting and between commits.
-- Execute a requested multi-STEP range as a sequence of isolated STEP transactions, never in
-  parallel. For each STEP, use only its owned paths (plus explicitly listed narrow exceptions),
-  complete its ordered sub-steps, run that STEP's required checks, commit and hand off before
-  starting the next STEP in the range. Never mix several STEPs into one commit or one handoff.
+  3. Parse the one STEP number in the owner's latest message. Verify it is STEP 001 if the
+     selected fresh repository has no handoffs, or the next uncompleted STEP on a resumed branch.
+  4. Read that exact STEP block and its ownership rules.
+  5. Read the preceding handoff when it exists.
+  6. Pull/inspect the latest state of the working branch before coding.
+- Each user message authorizes exactly its named STEP. Work only on that STEP's owned paths
+  (plus explicitly listed narrow exceptions), complete its ordered sub-steps, run required checks,
+  create its individual commit and handoff, then report completion and wait for the owner's next
+  single-STEP message. A later user message may arrive in the same chat; re-read the latest handoff
+  and branch state before continuing. Never mix STEPs into one commit or one handoff.
 - Migrations are append-only, numbered in order, never edited after commit, each with a rollback.
 - package.json is integrator-owned. When a package is needed, write a package request into
   the handoff file instead of editing package.json.
@@ -84,9 +85,9 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
   typecheck, lint, build and behavior checks, commit with `STEP NNN: title`, push, and include
   its completed handoff file in the same commit. In a multi-STEP session, reload/check the
   branch and read the just-written handoff before beginning STEP N+1.
-- Never begin STEP N+1 in a requested range until STEP N's verification, commit, push and
-  handoff all succeeded. If any fail, stop the range at that STEP and report the remaining
-  uncompleted range; do not claim it completed.
+- Never begin STEP N+1 until the owner explicitly requests it after STEP N's verification,
+  commit, push and handoff all succeeded. If any check fails, stop and report the exact failed
+  STEP; do not proceed until the owner requests a fix.
 - Completed STEP commits, handoffs and migrations are immutable. Before resuming any existing
   project, inspect the selected branch's contiguous handoff sequence and latest commit to find
   the next uncompleted STEP; do not infer progress from chat statements. In a genuinely new
@@ -105,15 +106,15 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
   do not treat a generic “Allow necessary shared changes” click as blanket permission. If the
   custom-text field is unavailable, stop and ask in chat before making that edit. After approval,
   edit only those listed paths and no others.
-- Before coding, verify that all six authoritative files are accessible under docs/final/ and
-  the root README identifies them as the only active instructions. In a new repository, copy
-  only those six planning files plus a root README; do not bring in historical docs/planning/,
-  old root specifications, code or migrations. In a resumed repository, preserve historical
-  docs/planning/ files referenced by handoffs. They may be consulted for historical rationale
-  or proof only; they never define current scope or override docs/final/. The root README and
-  docs/planning/README.md must identify that distinction. If an active prompt directs the agent
-  to follow a superseded plan, or any authoritative docs/final file is missing, stop before
-  coding and ask the owner to resolve the repository setup.
+- Before coding, verify all six authoritative files are accessible under docs/final/ and the
+  root README identifies them as the only active scope and workflow instructions. For the new
+  implementation repository, include the complete docs/planning/ archive bundle and its README
+  because the owner requested the full planning history; do not copy old application code,
+  migrations, handoffs, or conflicting root specifications. Mark every docs/planning document as
+  historical/background. It may be consulted for rationale, but never followed as instructions
+  or used to override docs/final/. FEATURE_LIST.md governs scope, MASTER_PROMPT.md governs method,
+  and STEP_PLAN_250.md governs step order/ownership. If any archive banner, README or final file
+  is missing or conflicts with that authority order, stop before coding and ask the owner.
 
 ## Production Readiness Rules (apply to every STEP)
 - Definition of done for every STEP: the implemented scope works end to end, typecheck

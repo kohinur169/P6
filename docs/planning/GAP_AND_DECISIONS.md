@@ -1,4 +1,6 @@
 // path: docs/planning/GAP_AND_DECISIONS.md
+
+> HISTORICAL ARCHIVE ONLY — This is an earlier discussion and gap-analysis record. Final decisions are governed by docs/final/FEATURE_LIST.md. Do not use this file to override or expand docs/final/.
 # Gap Analysis After Live, and Decisions Needed Before Coding Starts (Discussion Document)
 
 ## A. How Automatic Sub-Merchant Creation Works (summary)

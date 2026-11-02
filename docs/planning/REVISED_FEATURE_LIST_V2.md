@@ -1,9 +1,9 @@
 // path: docs/planning/REVISED_FEATURE_LIST_V2.md
-# KD SOLUTION IT - Revised Feature List V2 (Supersedes Conflicting Parts of Earlier Plans)
 
-This document is the current scope authority. Where MASTER_PROMPT .md, FEATURE_LIST.md,
-docs/planning/MASTER_PLAN.md or docs/planning/CHAT_PROMPTS.md conflict with this document,
-this document wins. Decision date: this revision removes the modules listed in Section 1.
+> HISTORICAL ARCHIVE ONLY — This is an earlier feature-list revision, retained as historical context. The active feature list is docs/final/FEATURE_LIST.md. Do not use this file to override or expand docs/final/.
+# KD SOLUTION IT - Revised Feature List V2 (Historical; Superseded by docs/final/)
+
+At the time of this historical revision, this document was treated as a scope authority. It has since been superseded by docs/final/FEATURE_LIST.md. The removed-scope notes below are retained only as project history and are not active implementation instructions.
 
 ## 1. Removed Completely (no code, no tables, no UI for these)
 - WhatsApp automation and Meta WhatsApp Cloud API module.

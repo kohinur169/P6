@@ -1,5 +1,7 @@
 // path: docs/planning/CHAT_PROMPTS.md
-# Copy-Paste Prompt For Every New Chat (English, use exactly this structure)
+
+> HISTORICAL ARCHIVE ONLY — This file contains earlier copy-paste chat prompts and is not active. Do not execute its instructions. Do not use this file to override or expand docs/final/.
+# Historical Copy-Paste Prompts (superseded; do not execute)
 
 ## A. Master Block - paste this FIRST in every new STEP chat, change only STEP number and title
 

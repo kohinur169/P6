@@ -6,8 +6,8 @@ Delete nothing. Write "none" where a field does not apply.
 
 ## STEP
 - Number and title:
-- Requested chat batch range, if any (for example STEP 001-005):
-- This STEP's position in the batch, or none:
+- Same-chat sequence number, if applicable (for example, this is the 4th STEP completed in this chat):
+- Next STEP requested by owner, if any; otherwise state "awaiting owner request":
 - Category:
 - Depends on (earlier STEPs in this category and their handoff files):
 

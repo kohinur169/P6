@@ -1,8 +1,11 @@
 // path: docs/planning/MASTER_PLAN.md
-# KD SOLUTION IT - Master Execution Plan (Planning Only, No Code in This Chat)
 
-> REVISION V2 (current authority): docs/planning/REVISED_FEATURE_LIST_V2.md supersedes every
-> conflicting part of this plan. Removed: WhatsApp, payroll, HR, accounting, tax reports, tax
+> HISTORICAL ARCHIVE ONLY — This is an earlier execution plan. It is retained for history; all active scope and workflow instructions are under docs/final/. Do not use this file to override or expand docs/final/.
+# KD SOLUTION IT - Master Execution Plan (Historical Archive; Planning Only)
+
+> Historical note: the original draft treated `docs/planning/REVISED_FEATURE_LIST_V2.md` as its then-current authority and recorded the removals below. Both this plan and that revision are now superseded by `docs/final/`; the listed material is preserved only as project history and must not be used as active authority.
+>
+> Removed in that earlier draft: WhatsApp, payroll, HR, accounting, tax reports, tax
 > filing, social automation, Google Drive, merchant staff accounts, and 11 of 16 providers.
 > Providers are now only NMI, Payoneer, Rainforest, Stripe Connect, Airwallex. Tax module is
 > removed, sales tax collection only is kept. Office roles are super_admin, ceo, compliance_kyc,

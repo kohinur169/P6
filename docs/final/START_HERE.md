@@ -1,52 +1,67 @@
 // path: docs/final/START_HERE.md
 # KD SOLUTION IT - Start Here
 
-## Approved planning files
-The only active product and implementation instructions are these six files:
+## Active specification and historical planning archive
+The six files under `docs/final/` are the only active product and implementation instructions:
 
-1. `docs/final/FEATURE_LIST.md` — complete product scope.
-2. `docs/final/MASTER_PROMPT.md` — engineering, security and workflow rules.
-3. `docs/final/STEP_PLAN_250.md` — exactly 250 implementation steps and their file ownership.
-4. `docs/final/PRODUCTION_CHECKLIST.md` — services, deployment, operational and go-live gates.
-5. `docs/final/START_HERE.md` — this repository setup and workflow guide.
-6. `docs/final/HANDOFF_TEMPLATE.md` — required per-step completion record.
+1. `docs/final/FEATURE_LIST.md` — approved product scope.
+2. `docs/final/MASTER_PROMPT.md` — engineering, security and work-session rules.
+3. `docs/final/STEP_PLAN_250.md` — 250 ordered STEPs and file ownership.
+4. `docs/final/PRODUCTION_CHECKLIST.md` — services, deployment and go-live gates.
+5. `docs/final/START_HERE.md` — repository setup and owner workflow.
+6. `docs/final/HANDOFF_TEMPLATE.md` — completion record for each STEP.
 
-`FEATURE_LIST.md` defines scope; `MASTER_PROMPT.md` governs how to work; `STEP_PLAN_250.md` defines sequence and ownership. If an advisory line in an old handoff disagrees with a later approved plan amendment, preserve the handoff and follow the current plan.
+The complete historical planning archive is kept under `docs/planning/`. Its files are valuable context and decision/audit history, but are not current instructions. The archive bundle consists of:
 
-## Start in a new coding repository from STEP 001
-1. Create a new, empty GitHub repository for the implementation. Keep the existing `kd-solution-it` repository as an archive; do not delete or overwrite it.
-2. Copy only the six files listed above into the new repository under the exact `docs/final/` paths.
-3. Do not copy old application code, `migrations/`, `docs/handoffs/`, `docs/planning/`, old root planning files, or the old README into the new repository. The new build starts with no assumed code or completed STEP.
-4. Add a short root `README.md` that points to `docs/final/START_HERE.md` and states that `docs/final/` is the sole active project specification. Do not point to old planning prompts.
-5. Commit the six planning files and README, then select this new repository and its working branch in a new Arena coding chat.
-6. Start at STEP 001. You may request one STEP or a consecutive range, for example `Implement STEP 001-040 in this chat`; the agent must work in numeric order and stop at a verified checkpoint if the requested range cannot safely fit in the session.
+- `docs/planning/README.md` — archive index and authority notice.
+- `docs/planning/CHAT_PROMPTS.md` — superseded chat prompt history.
+- `docs/planning/GAP_AND_DECISIONS.md` — earlier gap analysis and decision discussion.
+- `docs/planning/MASTER_PLAN.md` — earlier execution plan.
+- `docs/planning/REVISED_FEATURE_LIST_V2.md` — earlier feature revision.
+
+If these archive files disagree with `docs/final/`, follow `FEATURE_LIST.md` for scope, `MASTER_PROMPT.md` for method, and `STEP_PLAN_250.md` for sequence and file ownership. Read archived material only when useful for historical rationale; never execute its old prompts.
+
+## Create a fresh implementation repository
+1. Create a new, empty GitHub repository for this build. Keep the existing `kd-solution-it` repository intact as an archive; do not delete or overwrite it.
+2. Copy all six active files listed above to exactly the same paths under `docs/final/`.
+3. Copy the entire `docs/planning/` archive bundle listed above. Keep the historical banner/README so old prompts cannot be mistaken for current instructions.
+4. Add a short root `README.md` that states `docs/final/` contains the active instructions and `docs/planning/` is historical context only. Do not copy old application code, migrations, handoffs, root-level legacy specs, or secrets.
+5. Commit the planning set and README. Select this new repository and its working branch in Arena.
+6. Start with STEP 001. The new repository has no completed STEPs and must not assume the old repository's 80 handoffs.
 
 Suggested root `README.md` text:
 
 ```markdown
 # KD SOLUTION IT
 
-The active product scope, engineering rules, implementation sequence, production checklist and handoff template are maintained under `docs/final/`.
-Start with `docs/final/START_HERE.md`. Do not use external or historical planning documents as active instructions.
+The active product scope, engineering rules, STEP sequence, production checklist and handoff template are under `docs/final/`.
+Start with `docs/final/START_HERE.md`.
+`docs/planning/` is the complete historical planning archive; consult it only for background. It does not override `docs/final/`.
 ```
 
-## Resuming a repository that already has code
-Do not restart at STEP 001. Inspect the selected branch and the contiguous `docs/handoffs/STEP_NNN_COMPLETED.md` sequence, read the latest handoff and implement only the next uncompleted STEP. Never infer completion from a chat statement alone; the selected branch's handoff and commit history are the record. Do not rewrite completed code, migrations, commits or handoffs.
+## One STEP request at a time, many requests in the same chat
+In the first coding chat, write only:
 
-If the old repository retains `docs/planning/` files that existing handoffs reference, preserve them. Mark them historical/background in `docs/planning/README.md` and in the root README. They may be consulted to understand a specific historical decision or handoff, but they are not active scope or coding instructions; current `docs/final/` files take precedence. Do not move or delete referenced historical files.
+> `Implement STEP 001`
 
-## One chat may process a STEP range
-You may request one STEP or a consecutive range in one chat, for example `Implement STEP 001-040 in this chat`. The agent must first verify the start point from the selected branch, then process the exact requested range sequentially—never in parallel and never beyond the requested end number.
+Wait for that STEP's successful checks, commit, push and handoff. Then, in the **same chat session**, send the next separate message:
 
-For safe checkpoints, process at most five low/medium-risk STEPs before a checkpoint. Database migrations, authentication/security, money/ledger, KYC, provider, payout and production-release STEPs are one STEP per checkpoint. The same chat may continue through multiple checkpoints while context, tools and verifications remain healthy. A request for 40 STEPs is a target range, not a guarantee that one chat can safely finish all 40; if any STEP fails or session capacity is inadequate, stop after the last fully verified STEP and report exactly what remains.
+> `Implement STEP 002`
 
-Each STEP still runs its ordered sub-steps within the same chat session. Before beginning STEP N+1, STEP N must have passed its checks, been committed and pushed under `STEP NNN: title`, and have its own completed `docs/handoffs/STEP_NNN_COMPLETED.md`. Never combine several STEPs into one commit or one handoff. If continuing in the same chat, reload the branch state and read the new handoff before continuing.
+Continue one STEP request at a time—003, 004, and onward. You may continue in the same chat through STEP 040 or farther if the session remains healthy. Do not write a range such as `Implement STEP 001-040`; each request names exactly one STEP. The agent must not start a later STEP until the previous STEP has its own verified commit and handoff.
 
-## If an Arena ownership or permission card appears
-Use the STEP-specific File Ownership Rules first. If the requested paths are explicitly listed there, the permission is limited to those paths and behaviors. If the card still asks for permission, select “Revise options or write your own…” and enter the exact paths, reason and limit; a generic “Allow necessary shared changes” is not blanket permission. If no custom-text field is available, ask in chat before editing. For STEP 081, the plan pre-authorizes only MCC-specific onboarding/profile UI, MCC-only English catalog entries, the MCC-specific Zod/API integration using existing security guards, and the stated additive migration. It does not authorize refactoring generic auth/security code, changing `package.json`, editing earlier migrations or touching unrelated files. Record cross-path exceptions in the handoff.
+After every five completed low/medium-risk STEPs, pause for a brief progress checkpoint. Database migrations, authentication/security, money/ledger, KYC, provider, payout and production-release STEPs require an individual verification checkpoint. If context, tools, credentials or verification capacity become inadequate, stop after the last fully completed STEP. Continue in the same chat if it remains reliable; otherwise open a new chat and start from the next STEP proven by the branch handoff history. Never claim an unfinished STEP is complete.
 
-## Database and secrets
-A GitHub account/repository connection to Supabase alone does not guarantee migrations will run. Follow the explicitly configured and verified Supabase CLI/deployment procedure in `PRODUCTION_CHECKLIST.md`; verify target project, branch, migration history, staging and approval gates. Never paste database passwords, service-role keys, provider secrets or encryption keys into chat or commit them to Git.
+## Resume an existing implementation
+If you are working in a repository with code or handoffs, do not restart at STEP 001. Inspect the selected branch's contiguous `docs/handoffs/STEP_NNN_COMPLETED.md` sequence and latest commit. Begin only the next uncompleted STEP, read the previous handoff, and preserve completed code, migrations, commits and handoffs. Do not infer progress from memory or chat statements alone.
 
-## Completion checks
-Before advancing, confirm the STEP handoff exists on the selected branch, lists exact files/migrations and cross-path exceptions, records rollback proof where a migration was added, and reports typecheck, lint, build and required behavior checks. A failed or missing check means the STEP is not complete; do not skip ahead.
+## STEP ownership and Arena permission prompts
+The exact ownership exception for each STEP is in `STEP_PLAN_250.md`. For STEP 081, the exception is limited to MCC onboarding/profile UI, MCC-only English catalog entries, MCC-specific Zod/API integration using existing guards, and the stated additive migration. It does not authorize changing generic auth/security guards, `package.json`, earlier migrations or unrelated files.
+
+If Arena shows an ownership/permission card, do not approve broad shared changes. Choose “Revise options or write your own…” and enter only the exact STEP-owned paths, reason and limit. If that field is unavailable, ask in chat before editing. Record every permitted cross-path change in that STEP's handoff.
+
+## Supabase and secrets
+A GitHub connection alone does not guarantee Supabase migrations will run. Follow the verified Supabase CLI/deployment procedure in `PRODUCTION_CHECKLIST.md`, and verify the target project, branch, migration history, staging and approval gates. Never paste database passwords, service-role keys, provider secrets or encryption keys into chat or Git.
+
+## Completion gate for every STEP
+Before requesting the next STEP, verify that the previous STEP has its own handoff on the selected branch; the handoff lists exact files and migrations, rollback proof where applicable, and observed typecheck, lint, build and behavior-check results. Any failed or missing gate means stop and fix that STEP first.

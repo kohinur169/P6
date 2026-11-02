@@ -2,25 +2,24 @@
 # KD SOLUTION IT - 250 STEP Chat Plan
 
 ## How this plan is used
-- Keep all six `docs/final/` files in the selected implementation repository. The agent reads
-  them from the repository; the owner may request one STEP or an exact consecutive range in one
-  coding chat, for example `Implement STEP 001-040 in this chat`.
-- The agent verifies the start point from the selected branch: STEP 001 if no completed handoff
-  exists, otherwise the next uncompleted STEP. It never skips, repeats or exceeds the requested
-  end STEP.
-- A multi-STEP request is executed as sequential, isolated STEP transactions. At each safe
-  checkpoint, complete at most five low/medium-risk STEPs; database migration, authentication/
-  security, money/ledger, KYC, provider, payout and production-release STEPs are one STEP per
-  checkpoint. A long range such as 001-040 may require several checkpoints and may not fit one
-  chat; correctness and verification take priority over completing the whole range.
+- Keep all six `docs/final/` files and the complete historical `docs/planning/` bundle in the
+  selected fresh implementation repository. The final files are active authority; planning files
+  are historical background only and cannot override them.
+- The owner sends exactly one STEP number in each message, such as `Implement STEP 001`, then
+  `Implement STEP 002`. The same chat session may contain many such sequential requests, including
+  STEP 001 through STEP 040. Do not ask the owner to send a range and never start an unrequested STEP.
+- Verify the start point on the selected branch: STEP 001 if no completed handoff exists, otherwise
+  the next uncompleted STEP. Never skip, repeat or act beyond the one STEP in the latest message.
 - Each STEP independently follows its eight same-session sub-steps, passes required checks,
   commits as `STEP NNN: title`, pushes, and creates its own
-  `docs/handoffs/STEP_NNN_COMPLETED.md`. The next STEP in the range cannot start until the
-  preceding STEP's commit, push and handoff are verified. Never combine multiple STEPs into one
-  commit or handoff.
-- If a STEP fails, an ownership/scope conflict appears, a required secret/provider is unavailable,
-  or context/session capacity is inadequate, stop after the last fully verified STEP and report
-  exact completed and pending STEP numbers. Do not mark pending work complete or skip it.
+  `docs/handoffs/STEP_NNN_COMPLETED.md`. The owner must request the next STEP after receiving the
+  completed handoff. Never combine multiple STEPs into one commit or handoff.
+- After every five completed low/medium-risk STEPs, give a concise progress checkpoint. Database
+  migration, authentication/security, money/ledger, KYC, provider, payout and production-release
+  STEPs receive a verification checkpoint before the owner requests the next STEP. If a STEP fails,
+  an ownership/scope conflict appears, a required provider/secret is unavailable, or session capacity
+  is inadequate, stop and report the exact last completed STEP and next pending STEP. Never claim
+  pending work is complete or skip it.
 
 ## Production Gate for Every STEP
 Every STEP follows the Production Readiness Rules in docs/final/MASTER_PROMPT.md:
