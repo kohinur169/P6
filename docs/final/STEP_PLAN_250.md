@@ -21,8 +21,8 @@ variables must be added to .env.example. The handoff file of each STEP records t
 
 ## Coverage Map (feature list section to STEP range)
 - Platform Foundations: STEP 001-011. Application Security Core: STEP 056-067.
-- Database Schema and RLS: STEP 012-036, including the additive risk-policy and fulfilment-review schema in STEP 036.
-- Merchant risk-policy scope (FEATURE_LIST section 34): STEP 036, 072, 084, 089-095, 136-144, 181 and 249.
+- Database Schema and RLS foundation: STEP 012-036 (completed and immutable).
+- Merchant risk-policy scope (FEATURE_LIST section 34): new forward-only schema parts in STEP 081, 084, 092 and 181, plus workflows in STEP 090-095, 136-144, 170-175, 249 and final review in STEP 250. Completed STEPs 001-080 are not modified.
 - Roles, Permissions, Office Dashboards and Announcements: STEP 068-078.
 - Authentication, 2FA, Login Lock and LR-022 Sessions: STEP 037-055.
 - Merchant Onboarding, Processor KYB, optional IDV, Underwriting, Risk Tiers, Sanctions, Re-KYC and Sub-Merchant Provisioning: STEP 079-099.
@@ -46,7 +46,7 @@ variables must be added to .env.example. The handoff file of each STEP records t
 
 ## File Ownership Rules (applies to all 250 STEPs, no exceptions)
 - Foundation STEPs 001-011 own root configuration, config/ and lib/ foundation files.
-- Database STEPs 012-036 own only their numbered migration files in migrations/.
+- Database STEPs 012-036 own only their numbered migration files in migrations/. New policy-related migrations are owned only by the explicitly named, still-uncompleted domain STEPs 081, 084, 092 and 181; each appends a new migration and rollback after inspecting the current migration inventory. No completed migration is edited.
 - Auth STEPs 037-055 own app/(auth)/, app/api/auth/ and lib/auth/.
 - Security STEPs 056-067 own lib/security/.
 - Office STEPs 068-078 own app/(admin)/ and office components.
@@ -493,14 +493,13 @@ Sub-steps (same chat session, in order):
    7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.
    8. Run typecheck, lint and build for the touched area, exercise the behaviours named in the title, then finish with one commit, push and the completed handoff file.
 
-### STEP 036: Append-only migration for versioned seller risk policy, tier history, re-KYC and transaction-review records, plus audit hash chain, reference seed and super_admin bootstrap
-Database ownership: inspect the previous handoff and migration catalog first; add a new numbered forward migration and rollback only for missing risk-policy version/approval, merchant tier/history, re-KYC, fulfilment-evidence and manual-review structures. Reuse existing sanctions/KYC tables where their schema already satisfies the feature list. Never edit or renumber a committed migration.
-Chat line: Implement STEP 036 only: Append-only migration for versioned seller risk policy, tier history, re-KYC and transaction-review records, plus audit hash chain, reference seed and super_admin bootstrap. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 036: Append-only migration for versioned seller risk policy, tier history, re-KYC and transaction-review records, plus audit hash chain, reference seed and super_admin bootstrap", push, and create docs/handoffs/STEP_036_COMPLETED.md.
+### STEP 036: Audit hash chain function, initial reference seed for countries, MCC list and policy pages, and super_admin bootstrap
+Chat line: Implement STEP 036 only: Audit hash chain function, initial reference seed for countries, MCC list and policy pages, and super_admin bootstrap. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 036: Audit hash chain function, initial reference seed for countries, MCC list and policy pages, and super_admin bootstrap", push, and create docs/handoffs/STEP_036_COMPLETED.md.
 Sub-steps (same chat session, in order):
    1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
    2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
    3. Implement the database part of this STEP if any (migration plus rollback proof).
-   4. Implement the core service and logic for: Append-only migration for versioned seller risk policy, tier history, re-KYC and transaction-review records, plus audit hash chain, reference seed and super_admin bootstrap.
+   4. Implement the core service and logic for: Audit hash chain function, initial reference seed for countries, MCC list and policy pages, and super_admin bootstrap.
    5. Connect the API routes or background jobs for this STEP.
    6. Build or update the UI for this STEP where applicable and check desktop and mobile widths.
    7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.
@@ -932,13 +931,13 @@ Sub-steps (same chat session, in order):
    7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.
    8. Run typecheck, lint and build for the touched area, exercise the behaviours named in the title, then finish with one commit, push and the completed handoff file.
 
-### STEP 072: CEO confirmation for large actions and versioned CEO/super_admin risk-policy approval workflow
-Chat line: Implement STEP 072 only: CEO confirmation for large actions and versioned CEO/super_admin risk-policy approval workflow. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 072: CEO confirmation for large actions and versioned CEO/super_admin risk-policy approval workflow", push, and create docs/handoffs/STEP_072_COMPLETED.md.
+### STEP 072: CEO confirmation step for large payout release, platform fee change, reserve release and country enable actions
+Chat line: Implement STEP 072 only: CEO confirmation step for large payout release, platform fee change, reserve release and country enable actions. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 072: CEO confirmation step for large payout release, platform fee change, reserve release and country enable actions", push, and create docs/handoffs/STEP_072_COMPLETED.md.
 Sub-steps (same chat session, in order):
    1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
    2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
    3. Implement the database part of this STEP if any (migration plus rollback proof).
-   4. Implement the core service and logic for: CEO confirmation for large actions and versioned CEO/super_admin risk-policy approval workflow.
+   4. Implement the core service and logic for: CEO confirmation step for large payout release, platform fee change, reserve release and country enable actions.
    5. Connect the API routes or background jobs for this STEP.
    6. Build or update the UI for this STEP where applicable and check desktop and mobile widths.
    7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.
@@ -1042,13 +1041,14 @@ Sub-steps (same chat session, in order):
    7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.
    8. Run typecheck, lint and build for the touched area, exercise the behaviours named in the title, then finish with one commit, push and the completed handoff file.
 
-### STEP 081: Merchant Category Code field in onboarding and profile settings
-Chat line: Implement STEP 081 only: Merchant Category Code field in onboarding and profile settings. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 081: Merchant Category Code field in onboarding and profile settings", push, and create docs/handoffs/STEP_081_COMPLETED.md.
+### STEP 081: Merchant Category Code and additive versioned risk-policy/tier-history schema
+Database ownership: because STEP 001-080 are already complete, add a new forward migration and rollback for versioned risk-policy proposals/approvals, merchant risk profile and tier history only if those structures are missing. Inspect all existing migrations and handoffs first; never alter or rerun an already committed migration.
+Chat line: Implement STEP 081 only: Merchant Category Code and additive versioned risk-policy/tier-history schema. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 081: Merchant Category Code and additive versioned risk-policy/tier-history schema", push, and create docs/handoffs/STEP_081_COMPLETED.md.
 Sub-steps (same chat session, in order):
    1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
    2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
    3. Implement the database part of this STEP if any (migration plus rollback proof).
-   4. Implement the core service and logic for: Merchant Category Code field in onboarding and profile settings.
+   4. Implement the core service and logic for: Merchant Category Code and additive versioned risk-policy/tier-history schema.
    5. Connect the API routes or background jobs for this STEP.
    6. Build or update the UI for this STEP where applicable and check desktop and mobile widths.
    7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.
@@ -1079,6 +1079,7 @@ Sub-steps (same chat session, in order):
    8. Run typecheck, lint and build for the touched area, exercise the behaviours named in the title, then finish with one commit, push and the completed handoff file.
 
 ### STEP 084: Processor KYB document/status capture, UBO/director identity records and sanctions, PEP and adverse-media screening
+Database ownership: append a separate migration/rollback only for missing screening-run/list-version, match-resolution or re-KYC case records; reuse existing UBO/KYC/sanctions tables when they already meet the feature requirements.
 Chat line: Implement STEP 084 only: Processor KYB document/status capture, UBO/director identity records and sanctions, PEP and adverse-media screening. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 084: Processor KYB document/status capture, UBO/director identity records and sanctions, PEP and adverse-media screening", push, and create docs/handoffs/STEP_084_COMPLETED.md.
 Sub-steps (same chat session, in order):
    1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
@@ -1151,6 +1152,7 @@ Sub-steps (same chat session, in order):
    8. Run typecheck, lint and build for the touched area, exercise the behaviours named in the title, then finish with one commit, push and the completed handoff file.
 
 ### STEP 090: CEO/super_admin versioned risk-policy settings, underwriting criteria, screening cadence and re-KYC rules
+Policy change control: CEO and super_admin may propose permitted values. Activate only after approval by a distinct authorized actor under the requester → CEO → super_admin chain; super_admin retains full authority. Store each version with proposer, approver, effective date, reason and audit link; apply prospectively, never rewrite a policy snapshot already attached to a transaction.
 Chat line: Implement STEP 090 only: CEO/super_admin versioned risk-policy settings, underwriting criteria, screening cadence and re-KYC rules. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 090: CEO/super_admin versioned risk-policy settings, underwriting criteria, screening cadence and re-KYC rules", push, and create docs/handoffs/STEP_090_COMPLETED.md.
 Sub-steps (same chat session, in order):
    1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
@@ -1175,6 +1177,7 @@ Sub-steps (same chat session, in order):
    8. Run typecheck, lint and build for the touched area, exercise the behaviours named in the title, then finish with one commit, push and the completed handoff file.
 
 ### STEP 092: Pre-capture manual review for every transaction above USD 5,000 and risk-triggered transaction holds
+Database ownership: append a separate migration/rollback for missing transaction-review cases, decision evidence and policy-version linkage only; no earlier migration may be edited. A provider that cannot separate authorization/capture must be reviewed before charge submission or the attempt must be rejected.
 Chat line: Implement STEP 092 only: Pre-capture manual review for every transaction above USD 5,000 and risk-triggered transaction holds. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 092: Pre-capture manual review for every transaction above USD 5,000 and risk-triggered transaction holds", push, and create docs/handoffs/STEP_092_COMPLETED.md.
 Sub-steps (same chat session, in order):
    1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
@@ -2257,6 +2260,7 @@ Sub-steps (same chat session, in order):
 ## Client Portal and Payment Pages
 
 ### STEP 181: Tokenized invoice page with paid state, receipt and buyer delivery/service-acceptance confirmation
+Database ownership: append a separate migration/rollback for missing fulfilment evidence and buyer-acceptance records only; preserve existing invoice/payment rows and link them by immutable IDs. Payout remains blocked until valid evidence is recorded.
 Chat line: Implement STEP 181 only: Tokenized invoice page with paid state, receipt and buyer delivery/service-acceptance confirmation. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 181: Tokenized invoice page with paid state, receipt and buyer delivery/service-acceptance confirmation", push, and create docs/handoffs/STEP_181_COMPLETED.md.
 Sub-steps (same chat session, in order):
    1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.

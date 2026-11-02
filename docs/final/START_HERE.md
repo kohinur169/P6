@@ -12,6 +12,9 @@ Before the first implementation chat, confirm that the selected implementation r
 - docs/final/HANDOFF_TEMPLATE.md: the fixed template every chat copies to docs/handoffs/STEP_NNN_COMPLETED.md and fills completely.
 - docs/handoffs/: one completion file per finished STEP, created by the chat that finished it.
 
+## How to resume an in-progress implementation
+If the repository already contains completed work, do not restart at STEP 001 and do not overwrite completed code, migrations, commits or handoffs. Read the latest handoff and inspect the contiguous `docs/handoffs/STEP_NNN_COMPLETED.md` sequence on the selected branch; implement only the next uncompleted STEP. For this policy amendment, STEPs 001-080 are complete and unchanged; the next STEP is 081.
+
 ## How the owner runs the build
 1. Keep these documents inside the GitHub repository that will hold the project code.
 2. Open a new coding chat with this repository selected.

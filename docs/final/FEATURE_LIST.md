@@ -358,6 +358,7 @@
 - Go-live requires: production environment variables verified, provider live keys tested with the built-in connection test, email test received, Turnstile verified on the production domain, backup restore rehearsed, status page published, the first super_admin account created with 2FA enforced, and an independent security and compliance review completed with critical/high findings remediated and processor/card-scheme launch approvals confirmed.
 
 ## 34. Merchant Risk Tiers, Screening and Fulfilment-Gated Payouts
+- This is an additive policy amendment after completion of STEPs 001-080. Those completed steps, commits, handoffs and migrations remain unchanged; implementation begins only in STEP 081 and later.
 - This section defines platform-owned risk controls in addition to, never instead of, each contracted payment processor's own KYB/KYC and account approval.
 - The processor is the source of truth for its own sub-merchant verification and capabilities. Persist each provider's state independently and keep charges/payouts disabled for that provider until its required verification is complete.
 - Optional Jumio, Didit and Sumsub adapters support supplementary IDV/liveness checks. super_admin activates at most one; a selected IDV provider cannot override processor KYB or platform risk decisions. If no adapter is active or a result is unresolved, use manual review where permitted and fail closed for activation/payout.
