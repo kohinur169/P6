@@ -34,8 +34,7 @@ completely, with production quality.
 Next.js 14+ App Router with Server Components, TypeScript strict, Tailwind CSS, shadcn/ui,
 Supabase PostgreSQL with Auth and RLS, Supabase Storage and Amazon S3 object storage through the storage adapter layer selected by environment configuration,
 payment adapters for NMI, Payoneer, Rainforest, Stripe Connect and Airwallex,
-TaxCloud for United States sales tax calculation, KYC adapters for Jumio, Didit and Sumsub
-with manual KYC as the running mode until one is connected and activated,
+TaxCloud for United States sales tax calculation, optional supplementary identity-verification adapters for Jumio, Didit and Sumsub, with at most one active; the contracted payment processor remains authoritative for its own KYB/KYC and verification status,
 universal email through SMTP or API provider, Cloudflare Turnstile, DOMPurify,
 nonce-based CSP, Sentry, deployable on Vercel and Netlify.
 
@@ -95,13 +94,17 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
 - Every STEP that touches a provider must complete a sandbox cycle (payment, refund where
   supported, and webhook delivery) and record the provider documentation URLs, the sandbox
   URLs and the sandbox result in the handoff file.
+- For merchant onboarding, keep processor KYB/KYC status separate from optional Jumio/Didit/Sumsub IDV. Never let platform IDV override a processor restriction or rejection, and never treat an unavailable or unresolved check as a pass.
+- Risk-tier, sanctions, re-KYC, transaction review and payout code must fail closed on unknown/stale status. Payout requires persisted fulfilment proof, applicable post-fulfilment delay, provider eligibility, verified bank and all risk/hold/dispute gates. Manual review above USD 5,000 must block capture until approved.
+- CEO and super_admin risk-policy edits must be versioned, effective-dated, audited and approved by distinct authorized actors; policy changes are prospective and cannot silently weaken a transaction's captured policy version. Support cannot perform KYC approval, tier policy changes or payout release.
+- Risk policy values and their definitions (monthly period, chargeback denominator/window/sample minimum, completed order and fulfilment evidence) must be explicit. An unset value or unresolved case fails closed; stricter overlapping limits win.
 - Every STEP that adds an environment variable must add it to .env.example with a
   description and must read it through the validated environment schema only.
 - No secret, key, token or credential may appear in code, commits, logs, error messages
   or handoff files.
 - Every STEP must keep the performance rules: paginated lists, selected columns, joined
   queries, no queries in loops, background jobs for heavy work.
-- The final STEP verifies the full go-live gate list in FEATURE_LIST.md section 33 on
+- The final STEP verifies the full go-live gate lists in FEATURE_LIST.md sections 33 and 34 on
   staging before any production switch is recommended.
 
 ## Acceptance Checklist Required in Every Handoff

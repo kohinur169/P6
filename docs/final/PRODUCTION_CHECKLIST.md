@@ -14,9 +14,14 @@ together with FEATURE_LIST.md before the final STEPs.
 - Sentry project with alert rules to the office team.
 - Email provider account (SMTP or API based) with a verified sending domain.
 - Master platform accounts and live keys: NMI, Payoneer, Rainforest, Stripe Connect, Airwallex.
+- Confirm each contracted processor's KYB/KYC responsibilities, sub-merchant verification status mapping, account capabilities and production approval. Platform risk and sanctions controls remain separate; supplementary identity verification never replaces processor approval.
+- Before launch, CEO and super_admin approve and publish the versioned seller risk policy. Verify tier limits, monthly-limit definition, chargeback-rate denominator/window/sample minimum, fulfilment evidence, reserves, payout delays, above-USD-5,000 pre-capture review, re-KYC cadence, sanctions-list freshness and exception workflow. Undefined policy values must never default to permissive behavior.
+- Verify payout is blocked when delivery/service acceptance is missing, screening is stale, provider KYB is incomplete, bank is unverified, manual review is pending, a dispute blocks release or required hold/reserve remains. Every exception must be authorized, justified and audit logged.
+- Obtain independent security and compliance review before live payment: tenant/RLS isolation, access controls, key and card-data handling, webhook authenticity/idempotency, ledger and payout gates, screening/re-KYC, backup/restore, incident handling, processor contracts and applicable legal/card-scheme requirements. Remediate critical/high findings and record formal approval; feature implementation alone is not a compliance certification.
+
 - Sandbox keys for the same five providers for the staging environment.
 - TaxCloud availability for merchants who enable United States sales tax collection.
-- KYC provider accounts for Jumio, Didit and Sumsub when automatic verification is activated.
+- Each contracted payment processor's onboarding/KYB account and documentation. Optional supplementary IDV account(s) for Jumio, Didit or Sumsub; super_admin activates at most one. Processor KYB remains mandatory and authoritative regardless of IDV configuration.
 - Shopify app listing approved, and the WooCommerce plugin package ready for merchants.
 - Production domain with DNS records and HTTPS certificates.
 
