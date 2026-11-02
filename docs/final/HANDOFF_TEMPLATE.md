@@ -6,6 +6,8 @@ Delete nothing. Write "none" where a field does not apply.
 
 ## STEP
 - Number and title:
+- Requested chat batch range, if any (for example STEP 001-005):
+- This STEP's position in the batch, or none:
 - Category:
 - Depends on (earlier STEPs in this category and their handoff files):
 

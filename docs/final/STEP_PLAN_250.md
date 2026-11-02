@@ -2,16 +2,25 @@
 # KD SOLUTION IT - 250 STEP Chat Plan
 
 ## How this plan is used
-- This plan, docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md stay inside the
-  GitHub repository. The owner opens each new coding chat with this repository selected,
-  so the agent can read and verify the full plan and the complete project scope by itself.
-- The owner writes only one line in each new chat: Implement STEP NNN.
-  Example: Implement STEP 001.
-- The agent then reads FEATURE_LIST.md and MASTER_PROMPT.md in full, finds STEP NNN below,
-  reads the previous handoff file, implements only that STEP, runs typecheck and lint,
-  commits with the message "STEP NNN: title", pushes, and creates
-  docs/handoffs/STEP_NNN_COMPLETED.md before the chat ends.
-- One chat finishes exactly one STEP. STEP N+1 never starts before the handoff of STEP N exists.
+- Keep all six `docs/final/` files in the selected implementation repository. The agent reads
+  them from the repository; the owner may request one STEP or an exact consecutive range in one
+  coding chat, for example `Implement STEP 001-040 in this chat`.
+- The agent verifies the start point from the selected branch: STEP 001 if no completed handoff
+  exists, otherwise the next uncompleted STEP. It never skips, repeats or exceeds the requested
+  end STEP.
+- A multi-STEP request is executed as sequential, isolated STEP transactions. At each safe
+  checkpoint, complete at most five low/medium-risk STEPs; database migration, authentication/
+  security, money/ledger, KYC, provider, payout and production-release STEPs are one STEP per
+  checkpoint. A long range such as 001-040 may require several checkpoints and may not fit one
+  chat; correctness and verification take priority over completing the whole range.
+- Each STEP independently follows its eight same-session sub-steps, passes required checks,
+  commits as `STEP NNN: title`, pushes, and creates its own
+  `docs/handoffs/STEP_NNN_COMPLETED.md`. The next STEP in the range cannot start until the
+  preceding STEP's commit, push and handoff are verified. Never combine multiple STEPs into one
+  commit or handoff.
+- If a STEP fails, an ownership/scope conflict appears, a required secret/provider is unavailable,
+  or context/session capacity is inadequate, stop after the last fully verified STEP and report
+  exact completed and pending STEP numbers. Do not mark pending work complete or skip it.
 
 ## Production Gate for Every STEP
 Every STEP follows the Production Readiness Rules in docs/final/MASTER_PROMPT.md:

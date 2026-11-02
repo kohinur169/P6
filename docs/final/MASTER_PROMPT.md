@@ -49,17 +49,27 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
   docs/final/MASTER_PROMPT.md and docs/final/STEP_PLAN_250.md. The owner selects this
   repository when opening a coding chat, so the agent reads everything from the repository
   itself. The owner does not paste any instruction block.
-- In each new chat the owner writes only one line: Implement STEP NNN.
-  Example: Implement STEP 001.
-- On receiving that line, the agent must, before writing any code:
+- A coding chat may implement one STEP or a user-requested consecutive range, for example
+  `Implement STEP 001-040`. Never interpret an omitted range as permission to expand scope.
+  Before coding, identify the exact requested range and verify the next uncompleted STEP.
+- A requested range is a target, not a promise that all of it can safely fit in one session.
+  Work strictly in numeric order using verified checkpoints of at most five low/medium-risk
+  STEPs. Database migrations, authentication/security, money/ledger, KYC, payout, provider,
+  and production-release STEPs are always handled as one STEP per checkpoint. A session may
+  process multiple checkpoints, but only while context, access, and verification remain sound.
+- On receiving the request, before writing any code:
   1. Read docs/final/FEATURE_LIST.md in full.
   2. Read this MASTER_PROMPT.md in full.
-  3. Find STEP NNN in docs/final/STEP_PLAN_250.md and identify its exact scope and the
-     feature list sections it belongs to.
-  4. Read the previous handoff file docs/handoffs/STEP_(NNN-1)_COMPLETED.md when it exists.
-  5. Pull the latest state of the working branch.
-- One chat implements exactly one STEP. Work only on the files owned by that STEP.
-  Never edit files owned by another STEP.
+  3. Parse the exact requested STEP or consecutive STEP range. Verify it begins at STEP 001
+     if there are no handoffs, or at the next uncompleted STEP on the selected branch.
+  4. Read the exact STEP block and ownership rules for the first requested STEP.
+  5. Read the preceding handoff; for a requested range, read each newly created handoff before
+     starting the next STEP and re-check its exact STEP block and ownership rules.
+  6. Pull/inspect the latest state of the working branch before starting and between commits.
+- Execute a requested multi-STEP range as a sequence of isolated STEP transactions, never in
+  parallel. For each STEP, use only its owned paths (plus explicitly listed narrow exceptions),
+  complete its ordered sub-steps, run that STEP's required checks, commit and hand off before
+  starting the next STEP in the range. Never mix several STEPs into one commit or one handoff.
 - Migrations are append-only, numbered in order, never edited after commit, each with a rollback.
 - package.json is integrator-owned. When a package is needed, write a package request into
   the handoff file instead of editing package.json.
@@ -70,9 +80,13 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
 - Steps run strictly in numeric order. A STEP depends on every earlier STEP in its own
   category and on the handoff files of those STEPs. A later category may start only when
   the previous category handoff files all exist.
-- At the end of the chat: run typecheck and lint, commit with the message format
-  "STEP NNN: title", push the branch, and leave the completed handoff file in the same commit.
-- Never start STEP N+1 before the handoff of STEP N exists.
+- At the end of every STEP (not merely at the end of the chat): run that STEP's required
+  typecheck, lint, build and behavior checks, commit with `STEP NNN: title`, push, and include
+  its completed handoff file in the same commit. In a multi-STEP session, reload/check the
+  branch and read the just-written handoff before beginning STEP N+1.
+- Never begin STEP N+1 in a requested range until STEP N's verification, commit, push and
+  handoff all succeeded. If any fail, stop the range at that STEP and report the remaining
+  uncompleted range; do not claim it completed.
 - Completed STEP commits, handoffs and migrations are immutable. Before resuming any existing
   project, inspect the selected branch's contiguous handoff sequence and latest commit to find
   the next uncompleted STEP; do not infer progress from chat statements. In a genuinely new

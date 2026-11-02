@@ -19,7 +19,7 @@ The only active product and implementation instructions are these six files:
 3. Do not copy old application code, `migrations/`, `docs/handoffs/`, `docs/planning/`, old root planning files, or the old README into the new repository. The new build starts with no assumed code or completed STEP.
 4. Add a short root `README.md` that points to `docs/final/START_HERE.md` and states that `docs/final/` is the sole active project specification. Do not point to old planning prompts.
 5. Commit the six planning files and README, then select this new repository and its working branch in a new Arena coding chat.
-6. For the first coding chat, write exactly: `Implement STEP 001`.
+6. Start at STEP 001. You may request one STEP or a consecutive range, for example `Implement STEP 001-040 in this chat`; the agent must work in numeric order and stop at a verified checkpoint if the requested range cannot safely fit in the session.
 
 Suggested root `README.md` text:
 
@@ -35,10 +35,12 @@ Do not restart at STEP 001. Inspect the selected branch and the contiguous `docs
 
 If the old repository retains `docs/planning/` files that existing handoffs reference, preserve them. Mark them historical/background in `docs/planning/README.md` and in the root README. They may be consulted to understand a specific historical decision or handoff, but they are not active scope or coding instructions; current `docs/final/` files take precedence. Do not move or delete referenced historical files.
 
-## One chat, one STEP
-For every STEP, open a new coding chat with the same implementation repository and working branch selected. Write only `Implement STEP NNN` after verifying it is the next uncompleted STEP. The agent must read the six `docs/final/` files as applicable, the previous handoff, and the exact STEP block before coding. Complete one STEP, then verify its handoff before starting the next. Continue in strict numeric order through STEP 250.
+## One chat may process a STEP range
+You may request one STEP or a consecutive range in one chat, for example `Implement STEP 001-040 in this chat`. The agent must first verify the start point from the selected branch, then process the exact requested range sequentially—never in parallel and never beyond the requested end number.
 
-Each STEP runs its ordered sub-steps within the same chat session; sub-steps are not separate chats. The STEP finishes with required verification, exactly one STEP commit, push and a completed `docs/handoffs/STEP_NNN_COMPLETED.md` copied from the template.
+For safe checkpoints, process at most five low/medium-risk STEPs before a checkpoint. Database migrations, authentication/security, money/ledger, KYC, provider, payout and production-release STEPs are one STEP per checkpoint. The same chat may continue through multiple checkpoints while context, tools and verifications remain healthy. A request for 40 STEPs is a target range, not a guarantee that one chat can safely finish all 40; if any STEP fails or session capacity is inadequate, stop after the last fully verified STEP and report exactly what remains.
+
+Each STEP still runs its ordered sub-steps within the same chat session. Before beginning STEP N+1, STEP N must have passed its checks, been committed and pushed under `STEP NNN: title`, and have its own completed `docs/handoffs/STEP_NNN_COMPLETED.md`. Never combine several STEPs into one commit or one handoff. If continuing in the same chat, reload the branch state and read the new handoff before continuing.
 
 ## If an Arena ownership or permission card appears
 Use the STEP-specific File Ownership Rules first. If the requested paths are explicitly listed there, the permission is limited to those paths and behaviors. If the card still asks for permission, select “Revise options or write your own…” and enter the exact paths, reason and limit; a generic “Allow necessary shared changes” is not blanket permission. If no custom-text field is available, ask in chat before editing. For STEP 081, the plan pre-authorizes only MCC-specific onboarding/profile UI, MCC-only English catalog entries, the MCC-specific Zod/API integration using existing security guards, and the stated additive migration. It does not authorize refactoring generic auth/security code, changing `package.json`, editing earlier migrations or touching unrelated files. Record cross-path exceptions in the handoff.
