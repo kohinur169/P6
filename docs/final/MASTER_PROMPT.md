@@ -73,14 +73,12 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
 - At the end of the chat: run typecheck and lint, commit with the message format
   "STEP NNN: title", push the branch, and leave the completed handoff file in the same commit.
 - Never start STEP N+1 before the handoff of STEP N exists.
-- Completed STEP commits, handoffs and migrations are immutable. The owner reports STEPs
-  001-080 complete; do not reopen, renumber or rewrite any completed work. Before resuming,
-  verify the selected branch has a contiguous handoff sequence through STEP 080. If it does,
-  the next STEP is 081; if not, stop and reconcile the branch/progress with the owner rather
-  than skipping missing STEPs. Implement this policy only in still-uncompleted STEPs, using
-  append-only migrations owned by the designated future STEPs. Inspect the actual migration
-  inventory before assigning a migration number; never edit a committed migration or claim
-  an unverified step is complete.
+- Completed STEP commits, handoffs and migrations are immutable. Before resuming any existing
+  project, inspect the selected branch's contiguous handoff sequence and latest commit to find
+  the next uncompleted STEP; do not infer progress from chat statements. In a genuinely new
+  implementation repository with no completed handoffs, start at STEP 001. Never skip a STEP,
+  reopen a completed STEP or edit a committed migration. Any new schema uses a new append-only
+  migration with rollback, after inspecting the repository's actual migration inventory.
 - If anything in the STEP conflicts with FEATURE_LIST.md, FEATURE_LIST.md wins and the
   conflict must be written into the handoff file. For approved scope amendments, the current
   FEATURE_LIST.md and STEP_PLAN_250.md supersede only the advisory “Next STEP” title in an
@@ -94,13 +92,14 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
   custom-text field is unavailable, stop and ask in chat before making that edit. After approval,
   edit only those listed paths and no others.
 - Before coding, verify that all six authoritative files are accessible under docs/final/ and
-  the root README identifies them as the only active instructions. This repository may retain
-  docs/planning/ for historical handoff evidence; treat every file there, including old
-  CHAT_PROMPTS.md, MASTER_PLAN.md and REVISED_FEATURE_LIST_V2.md, as historical only. Never
-  follow their instructions or use them to expand scope. Update the README and add a historical-
-  only notice in docs/planning/README.md. Preserve completed handoff references; do not delete
-  or move the historical files. If any active README/prompt still directs the agent to use
-  those old plans, or any required docs/final file is missing, stop before coding.
+  the root README identifies them as the only active instructions. In a new repository, copy
+  only those six planning files plus a root README; do not bring in historical docs/planning/,
+  old root specifications, code or migrations. In a resumed repository, preserve historical
+  docs/planning/ files referenced by handoffs. They may be consulted for historical rationale
+  or proof only; they never define current scope or override docs/final/. The root README and
+  docs/planning/README.md must identify that distinction. If an active prompt directs the agent
+  to follow a superseded plan, or any authoritative docs/final file is missing, stop before
+  coding and ask the owner to resolve the repository setup.
 
 ## Production Readiness Rules (apply to every STEP)
 - Definition of done for every STEP: the implemented scope works end to end, typecheck

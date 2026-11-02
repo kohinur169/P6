@@ -21,8 +21,8 @@ variables must be added to .env.example. The handoff file of each STEP records t
 
 ## Coverage Map (feature list section to STEP range)
 - Platform Foundations: STEP 001-011. Application Security Core: STEP 056-067.
-- Database Schema and RLS foundation: STEP 012-036 (completed and immutable).
-- Merchant risk-policy scope (FEATURE_LIST section 34): new forward-only schema parts in STEP 081, 084, 092 and 181, plus workflows in STEP 090-095, 136-144, 170-175, 249 and final review in STEP 250. Completed STEPs 001-080 are not modified.
+- Database Schema and RLS foundation: STEP 012-036. Later feature-specific schema additions use only their explicitly assigned, append-only migrations.
+- Merchant risk-policy scope (FEATURE_LIST section 34): forward-only schema parts in STEP 081, 084, 092 and 181, plus workflows in STEP 090-095, 136-144, 170-175, 249 and final review in STEP 250. Earlier STEP scopes remain unchanged.
 - Roles, Permissions, Office Dashboards and Announcements: STEP 068-078.
 - Authentication, 2FA, Login Lock and LR-022 Sessions: STEP 037-055.
 - Merchant Onboarding, Processor KYB, optional IDV, Underwriting, Risk Tiers, Sanctions, Re-KYC and Sub-Merchant Provisioning: STEP 079-099.
@@ -1043,7 +1043,7 @@ Sub-steps (same chat session, in order):
    8. Run typecheck, lint and build for the touched area, exercise the behaviours named in the title, then finish with one commit, push and the completed handoff file.
 
 ### STEP 081: Merchant Category Code and additive versioned risk-policy/tier-history schema
-Database ownership: because STEP 001-080 are already complete, add a new forward migration and rollback for versioned risk-policy proposals/approvals, merchant risk profile and tier history only if those structures are missing. Inspect all existing migrations and handoffs first; never alter or rerun an already committed migration.
+Database ownership: when STEP 081 is reached in numeric order, inspect the completed handoffs and actual migration inventory. Add a new forward migration and rollback for versioned risk-policy proposals/approvals, merchant risk profile and tier history only if those structures are missing. Never alter or rerun a committed migration; record the new migration number and rollback proof in the handoff.
 STEP 081 ownership exception: onboarding and profile MCC UI, MCC-only English catalog entries, the existing MCC-specific client/server validation and API integration, plus only the listed additive schema. Before edits, print the exact file paths and confirm each is covered by this exception. Do not change general authentication/security guards or unrelated shared files.
 Chat line: Implement STEP 081 only: Merchant Category Code and additive versioned risk-policy/tier-history schema. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 081: Merchant Category Code and additive versioned risk-policy/tier-history schema", push, and create docs/handoffs/STEP_081_COMPLETED.md.
 Sub-steps (same chat session, in order):
