@@ -12,6 +12,9 @@ Before coding, confirm the selected implementation repository contains all six a
 - docs/final/HANDOFF_TEMPLATE.md: the fixed template every chat copies to docs/handoffs/STEP_NNN_COMPLETED.md and fills completely.
 - docs/handoffs/: one completion file per finished STEP, created by the chat that finished it.
 
+## If an Arena ownership/permission card appears
+Do not approve a broad shared-path change without a boundary. In the card, choose “Revise options or write your own…” and paste the exact file paths, reasons, and limits from the STEP-specific ownership exception in `STEP_PLAN_250.md`. For STEP 081, its narrow exception already covers the MCC profile/onboarding UI, MCC-only English strings, MCC-specific Zod/API integration, and its additive migration; it does not permit changing generic auth/security guards, `package.json`, unrelated files, or completed STEP behavior. If the card has no custom-text field, stop and ask in the chat before approving any shared edit.
+
 ## How to resume an in-progress implementation
 If the repository already contains completed work, do not restart at STEP 001 and do not overwrite completed code, migrations, commits or handoffs. Read the latest handoff and inspect the contiguous `docs/handoffs/STEP_NNN_COMPLETED.md` sequence on the selected branch; implement only the next uncompleted STEP. The owner reports STEPs 001-080 complete, so the expected next STEP is 081; verify that STEP_080 handoff exists on the selected branch before proceeding. If it does not, stop and reconcile progress rather than skipping.
 

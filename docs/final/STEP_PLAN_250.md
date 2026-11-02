@@ -44,13 +44,14 @@ variables must be added to .env.example. The handoff file of each STEP records t
   STEP that needs a job registers it on that foundation. STEP 249 verifies all schedules,
   including daily screening, re-KYC, volume-spike, tier-limit and fulfilment-gated payout jobs.
 
-## File Ownership Rules (applies to all 250 STEPs, no exceptions)
+## File Ownership Rules (applies to all 250 STEPs; only the explicit narrow overrides below are allowed)
 - Foundation STEPs 001-011 own root configuration, config/ and lib/ foundation files.
 - Database STEPs 012-036 own only their numbered migration files in migrations/. New policy-related migrations are owned only by the explicitly named, still-uncompleted domain STEPs 081, 084, 092 and 181; each appends a new migration and rollback after inspecting the current migration inventory. No completed migration is edited.
 - Auth STEPs 037-055 own app/(auth)/, app/api/auth/ and lib/auth/.
 - Security STEPs 056-067 own lib/security/.
 - Office STEPs 068-078 own app/(admin)/ and office components.
 - Onboarding and KYC STEPs 079-099 own app/(dashboard)/onboarding/, services/kyc/ and services/submerchant/.
+- STEP 081 has a narrow, pre-authorized cross-path exception, because its approved scope includes MCC in onboarding and merchant profile settings: the existing merchant profile-settings UI component; `lib/i18n/strings/en.ts` for MCC-only labels/messages; the existing client/server Zod schema and API handler for the MCC field only; and the STEP 081-owned additive migration described below. The agent must inspect the repository and list exact paths before editing. Reuse existing authentication, authorization, RLS and security middleware; do not modify those shared guards, refactor unrelated code, change `package.json`, or touch any other completed STEP's behavior. If the required profile/API path cannot be identified without exceeding this exception, stop and ask before editing.
 - Storage STEPs 100-105 own lib/storage/.
 - Business STEPs 106-126 own services/clients/, services/products/, services/invoices/ and invoice components.
 - Payment Core STEPs 127-146 own lib/payments/ core files (types, registry, routing, ledger, settlement), never adapter files.
@@ -1043,6 +1044,7 @@ Sub-steps (same chat session, in order):
 
 ### STEP 081: Merchant Category Code and additive versioned risk-policy/tier-history schema
 Database ownership: because STEP 001-080 are already complete, add a new forward migration and rollback for versioned risk-policy proposals/approvals, merchant risk profile and tier history only if those structures are missing. Inspect all existing migrations and handoffs first; never alter or rerun an already committed migration.
+STEP 081 ownership exception: onboarding and profile MCC UI, MCC-only English catalog entries, the existing MCC-specific client/server validation and API integration, plus only the listed additive schema. Before edits, print the exact file paths and confirm each is covered by this exception. Do not change general authentication/security guards or unrelated shared files.
 Chat line: Implement STEP 081 only: Merchant Category Code and additive versioned risk-policy/tier-history schema. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 081: Merchant Category Code and additive versioned risk-policy/tier-history schema", push, and create docs/handoffs/STEP_081_COMPLETED.md.
 Sub-steps (same chat session, in order):
    1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.

@@ -85,6 +85,14 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
   conflict must be written into the handoff file. For approved scope amendments, the current
   FEATURE_LIST.md and STEP_PLAN_250.md supersede only the advisory “Next STEP” title in an
   older completed handoff; never edit that completed handoff or its underlying completed work.
+- Ownership/permission prompt protocol: first compare the requested path with the STEP-specific
+  File Ownership Rules. If the path is explicitly listed as a narrow exception, it is authorized
+  only for that STEP and only for the stated behavior; record the exact path and reason in the
+  handoff. If no exception covers it, do not edit. In Arena's permission card, use “Revise
+  options or write your own…” and submit the exact paths plus reasons and the allowed boundary;
+  do not treat a generic “Allow necessary shared changes” click as blanket permission. If the
+  custom-text field is unavailable, stop and ask in chat before making that edit. After approval,
+  edit only those listed paths and no others.
 - Before coding, verify that all six authoritative files are accessible under docs/final/ and
   the root README identifies them as the only active instructions. This repository may retain
   docs/planning/ for historical handoff evidence; treat every file there, including old

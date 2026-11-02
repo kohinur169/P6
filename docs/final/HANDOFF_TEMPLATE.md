@@ -13,6 +13,7 @@ Delete nothing. Write "none" where a field does not apply.
 - Created:
 - Modified:
 - Owned paths touched (must match the File Ownership Rules in STEP_PLAN_250.md):
+- Cross-step ownership exception used (exact paths, authority in STEP_PLAN_250.md or approval reference, and reason), or none:
 
 ## Database
 - Migrations added (file names):

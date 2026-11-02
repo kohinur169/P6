@@ -9,6 +9,6 @@ The current implementation plan is maintained in `docs/final/` only:
 - `docs/final/PRODUCTION_CHECKLIST.md` — deployment and operational readiness.
 - `docs/final/HANDOFF_TEMPLATE.md` — required per-step handoff format.
 
-Start by following `docs/final/START_HERE.md`. Files under `docs/planning/` are historical evidence only and must never be used as implementation instructions; preserve them because completed handoffs may reference them. If any active prompt or README directs the agent to those old plans, stop and correct the active instruction before coding.
+Start by following `docs/final/START_HERE.md`. Files under `docs/planning/` are historical background and audit evidence, not active scope. They may be consulted only when a current handoff or implementation question needs historical context; `docs/final/` controls scope and coding rules. Preserve old files referenced by completed handoffs.
 
 Database migration automation must be explicitly configured and verified. Connecting a GitHub repository to Supabase alone does not guarantee that migrations are applied. Follow the Supabase CLI/deployment procedure in `docs/final/PRODUCTION_CHECKLIST.md`.
