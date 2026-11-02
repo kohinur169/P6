@@ -82,15 +82,17 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
   inventory before assigning a migration number; never edit a committed migration or claim
   an unverified step is complete.
 - If anything in the STEP conflicts with FEATURE_LIST.md, FEATURE_LIST.md wins and the
-  conflict must be written into the handoff file.
+  conflict must be written into the handoff file. For approved scope amendments, the current
+  FEATURE_LIST.md and STEP_PLAN_250.md supersede only the advisory “Next STEP” title in an
+  older completed handoff; never edit that completed handoff or its underlying completed work.
 - Before coding, verify that all six authoritative files are accessible under docs/final/ and
-  the root README identifies them as the only active instructions. If root-level legacy
-  plans, an old README, or conflicting docs/planning/ prompts exist (notably prompts telling
-  the agent to read another master plan/feature list), do not combine plans, choose a scope,
-  or code. Report the paths and require them to be archived or clearly marked historical-only
-  outside active instruction paths, and update README to point exclusively to docs/final/.
-  Preserve their history; do not silently delete owner material. Stop if any conflict or
-  missing authoritative file remains.
+  the root README identifies them as the only active instructions. This repository may retain
+  docs/planning/ for historical handoff evidence; treat every file there, including old
+  CHAT_PROMPTS.md, MASTER_PLAN.md and REVISED_FEATURE_LIST_V2.md, as historical only. Never
+  follow their instructions or use them to expand scope. Update the README and add a historical-
+  only notice in docs/planning/README.md. Preserve completed handoff references; do not delete
+  or move the historical files. If any active README/prompt still directs the agent to use
+  those old plans, or any required docs/final file is missing, stop before coding.
 
 ## Production Readiness Rules (apply to every STEP)
 - Definition of done for every STEP: the implemented scope works end to end, typecheck

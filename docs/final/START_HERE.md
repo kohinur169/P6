@@ -2,7 +2,7 @@
 # KD SOLUTION IT - Start Here
 
 ## Preflight: prevent legacy-plan conflicts
-Before coding, confirm the selected implementation repository contains all six authoritative files under `docs/final/` and its root `README.md` identifies them as the sole active instructions. The existing `kd-solution-it` repository also contains legacy `docs/planning/` files, including old chat prompts that instruct agents to read a different plan. Preserve them in Git history, but archive/remove them from the active instruction paths (or replace them with a clear historical-only notice) and update the root README before coding. Do not let any old root planning file, old 80-chat README or `docs/planning/` prompt compete with `docs/final/`. If conflicting instructions remain or any authoritative file is inaccessible, stop; do not guess or code.
+Before coding, confirm the selected implementation repository contains all six authoritative files under `docs/final/` and its root `README.md` identifies them as the sole active instructions. The existing `kd-solution-it` repository contains old `docs/planning/` files referenced by historical handoffs; preserve those paths, but mark the folder historical-only in `docs/planning/README.md` and update the root README to state that only `docs/final/` is active. Never follow old CHAT_PROMPTS.md, MASTER_PLAN.md or REVISED_FEATURE_LIST_V2.md as instructions. If README or any active prompt still directs the agent to use them, or if an authoritative file is unavailable, stop; do not guess or code.
 
 ## What lives in this repository
 - docs/final/FEATURE_LIST.md: the single complete feature list. This is the only scope document.
