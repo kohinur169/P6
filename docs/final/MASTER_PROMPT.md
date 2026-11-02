@@ -73,12 +73,14 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
 - At the end of the chat: run typecheck and lint, commit with the message format
   "STEP NNN: title", push the branch, and leave the completed handoff file in the same commit.
 - Never start STEP N+1 before the handoff of STEP N exists.
-- Completed STEP commits, handoffs and migrations are immutable. For this scope amendment,
-  STEP 001-080 are completed and must not be reopened, renumbered, or rewritten. Implement
-  the new merchant-risk policy only in the still-uncompleted STEPs 081 and later, using
-  append-only migrations owned by the designated future STEPs. Inspect the selected
-  repository's actual latest handoff and migration inventory before assigning any new
-  migration number; never edit a committed migration or claim an unverified step is complete.
+- Completed STEP commits, handoffs and migrations are immutable. The owner reports STEPs
+  001-080 complete; do not reopen, renumber or rewrite any completed work. Before resuming,
+  verify the selected branch has a contiguous handoff sequence through STEP 080. If it does,
+  the next STEP is 081; if not, stop and reconcile the branch/progress with the owner rather
+  than skipping missing STEPs. Implement this policy only in still-uncompleted STEPs, using
+  append-only migrations owned by the designated future STEPs. Inspect the actual migration
+  inventory before assigning a migration number; never edit a committed migration or claim
+  an unverified step is complete.
 - If anything in the STEP conflicts with FEATURE_LIST.md, FEATURE_LIST.md wins and the
   conflict must be written into the handoff file.
 - Before coding, verify that the selected repository contains the six authoritative files
