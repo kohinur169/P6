@@ -2,7 +2,7 @@
 # KD SOLUTION IT - Start Here
 
 ## Preflight: prevent legacy-plan conflicts
-Before the first implementation chat, confirm that the selected implementation repository contains these six authoritative files under `docs/final/` and that its root `README.md` points to them. Do not copy the old root `FEATURE_LIST.md`, the root `MASTER_PROMPT .md` (including its space), old 80-chat README, or `docs/planning/` into the implementation repository. If conflicting legacy planning files are already present, stop and clean the repository before coding; an agent must never combine two different plans or answer a scope-choice prompt using obsolete files. If the six authoritative files are not accessible in the selected repository, do not begin implementation.
+Before coding, confirm the selected implementation repository contains all six authoritative files under `docs/final/` and its root `README.md` identifies them as the sole active instructions. The existing `kd-solution-it` repository also contains legacy `docs/planning/` files, including old chat prompts that instruct agents to read a different plan. Preserve them in Git history, but archive/remove them from the active instruction paths (or replace them with a clear historical-only notice) and update the root README before coding. Do not let any old root planning file, old 80-chat README or `docs/planning/` prompt compete with `docs/final/`. If conflicting instructions remain or any authoritative file is inaccessible, stop; do not guess or code.
 
 ## What lives in this repository
 - docs/final/FEATURE_LIST.md: the single complete feature list. This is the only scope document.
@@ -16,15 +16,12 @@ Before the first implementation chat, confirm that the selected implementation r
 If the repository already contains completed work, do not restart at STEP 001 and do not overwrite completed code, migrations, commits or handoffs. Read the latest handoff and inspect the contiguous `docs/handoffs/STEP_NNN_COMPLETED.md` sequence on the selected branch; implement only the next uncompleted STEP. The owner reports STEPs 001-080 complete, so the expected next STEP is 081; verify that STEP_080 handoff exists on the selected branch before proceeding. If it does not, stop and reconcile progress rather than skipping.
 
 ## How the owner runs the build
-1. Keep these documents inside the GitHub repository that will hold the project code.
-2. Open a new coding chat with this repository selected.
-3. Write only one line in that chat: Implement STEP 001.
-4. The agent reads FEATURE_LIST.md, MASTER_PROMPT.md and STEP_PLAN_250.md from the
-   repository by itself, verifies the full plan and the complete project scope, implements
-   only STEP 001, runs typecheck and lint, commits, pushes, and writes
-   docs/handoffs/STEP_001_COMPLETED.md.
-5. Open the next chat with the same repository selected and write: Implement STEP 002.
-6. Continue in order up to STEP 250. Never skip a step and never run two steps in one chat.
+1. Keep all six authoritative documents inside the GitHub repository that holds the project code, after completing the preflight above.
+2. Open a new coding chat with the correct repository and working branch selected.
+3. For a genuinely new project with no completed handoffs, write: `Implement STEP 001`.
+4. For an existing project, read the last completed handoff and verify the contiguous handoff sequence on that selected branch. Implement only the next uncompleted STEP; never restart at 001 or skip missing handoffs.
+5. For this amendment, the owner reports STEPs 001-080 complete. Proceed with `Implement STEP 081` only if `docs/handoffs/STEP_080_COMPLETED.md` exists on the selected branch and STEPs 001-080 are contiguous. If the branch is behind that checkpoint, stop and reconcile the correct branch/progress first.
+6. The agent reads the authoritative files and previous handoff, completes exactly one STEP, runs required verification, commits/pushes and creates that STEP's handoff. Continue numerically, one new chat per STEP, through STEP 250.
 
 ## Why no long instruction needs to be pasted
 The repository is selected in the chat, so the agent has direct access to the feature list,

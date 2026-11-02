@@ -83,13 +83,14 @@ header and in docs/final/PROVIDER_DOCS.md. Code from the documentation, never fr
   an unverified step is complete.
 - If anything in the STEP conflicts with FEATURE_LIST.md, FEATURE_LIST.md wins and the
   conflict must be written into the handoff file.
-- Before coding, verify that the selected repository contains the six authoritative files
-  under docs/final/. If legacy root files such as FEATURE_LIST.md, "MASTER_PROMPT .md",
-  or an old README conflict with docs/final/, do not choose between their scopes, do not
-  ask the owner to resolve feature options, and do not code. Report the conflicting paths
-  and require the owner to use a clean implementation repository containing only the six
-  docs/final planning files (plus an updated root README pointing to docs/final). If any
-  required authoritative file is inaccessible or absent, stop and report that instead.
+- Before coding, verify that all six authoritative files are accessible under docs/final/ and
+  the root README identifies them as the only active instructions. If root-level legacy
+  plans, an old README, or conflicting docs/planning/ prompts exist (notably prompts telling
+  the agent to read another master plan/feature list), do not combine plans, choose a scope,
+  or code. Report the paths and require them to be archived or clearly marked historical-only
+  outside active instruction paths, and update README to point exclusively to docs/final/.
+  Preserve their history; do not silently delete owner material. Stop if any conflict or
+  missing authoritative file remains.
 
 ## Production Readiness Rules (apply to every STEP)
 - Definition of done for every STEP: the implemented scope works end to end, typecheck
