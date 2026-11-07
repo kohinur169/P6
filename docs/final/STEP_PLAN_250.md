@@ -27,6 +27,57 @@ typecheck, lint and build must pass; migrations must prove rollback; money flows
 prove balanced ledger entries; provider work must prove a sandbox cycle; new environment
 variables must be added to .env.example. The handoff file of each STEP records these proofs.
 
+## Cross-STEP Contract: Invoice Issuance, Recurrence and Email Delivery
+- `draft` is not an issued invoice. The canonical `draft -> sent` transition is owned by STEP 116.
+  It must assign the invoice number using STEP 115's existing `takeInvoiceNumber` service, set
+  `issued_at`, transition the status, and write the existing invoice-event/audit records in one
+  database transaction. Repeating the issue request for an already-sent invoice must return the
+  existing result without allocating another number or duplicating its event. Use row locking or
+  an equivalent concurrency-safe guard. Never edit STEP 115 or any committed migration to do this.
+- For this product, `sent` means the invoice has been issued by the platform and its stable email
+  job has been durably enqueued; it does not claim the recipient's email was delivered. Email
+  delivery, provider message IDs and delivery retries belong to STEPs 221-227. Do not call
+  `lib/email` from an invoice/recurrence STEP or claim delivery in UI, logs, tests or handoffs.
+- STEP 123 creates exactly one recurring invoice for each schedule occurrence, then uses STEP 116's
+  canonical issue transition in the same transaction. The occurrence key is the schedule ID plus
+  the scheduled local calendar date supplied by STEP 122, not the worker's current date/time.
+  A delayed or repeated scheduler run must resolve to that same occurrence and must not allocate a
+  second invoice number, invoice, issue event, email job or reminder occurrence.
+- `invoice_events` is an append-only domain timeline, never an email queue or mutable delivery-status
+  table. Do not assume it has a dedupe-key column or consumer contract. The durable job queue from
+  STEP 011/012 carries email work and has its own stable idempotency key. Delivery/attempt state is
+  recorded by STEPs 226-227; never update or delete an invoice event to mark it sent/failed.
+- A reminder occurrence count means reminder events/jobs durably enqueued, not emails successfully
+  delivered. Use a stable reminder occurrence/dedupe key and the configured interval/limit. A retry
+  of email delivery retries the same job key and does not consume another reminder occurrence.
+  Do not add a mutable per-invoice sent counter unless a separately approved feature change requires it.
+- STEP 123 may add a schema migration only under its explicit narrow ownership below. Before coding,
+  inspect the actual migration inventory and append exactly the next unused migration. If the current
+  highest migration is 0118, the next is 0119; never assume that number without checking. Never edit,
+  renumber or replay-patch a committed migration.
+- STEP 225 registers the email-job handler and consumes stable email jobs emitted by earlier feature
+  STEPs, including invoice issue/reminders, estimate issue, account/KYC alerts, dispute deadline
+  warnings, subscription warnings/service changes and support replies. STEP 226 records delivery
+  attempts/provider message IDs; STEP 227 retries the same job idempotently. If the job queue lacks
+  durable idempotency/claim semantics, stop and resolve its STEP 011/012 contract before producers
+  are implemented; do not disguise a timeline row as an email job.
+
+## Dependency Preflight and Cross-STEP Integration Register
+Before coding any STEP, list its required earlier handoffs, schema objects, callable service/job contracts, and any later consumer in the working notes. Use only interfaces actually present on the selected branch. A later STEP is not an available dependency. The integration bullets below are planning contracts, not proof that the implementation already provides them; verify each against the selected branch, its schema and handoff. If the current STEP's acceptance cannot work without a missing prerequisite, stop before coding and request an owner-approved plan amendment; do not use mocks, direct table writes, fabricated statuses, or duplicate implementations to claim completion. MASTER_PROMPT.md currently prohibits test files, so do not create test files; run existing permitted checks and perform documented manual/reproducible behavior checks. If a STEP can only meet its acceptance by creating a prohibited test file, stop and request an explicit policy decision. Every later integration must have a named owner STEP and an explicit stable contract below.
+
+- STEP 011/012: before relying on the job API, verify its actual schema and handoff provide stable idempotency keys and concurrent enqueue/claim safety. Do not assume STEP 012 already has a nullable idempotency key or unique partial index. If a required queue guarantee is absent, stop and request an owner-approved prerequisite plan; later STEPs may not silently alter the queue/worker foundation. Once verified, later STEPs use STEP 011's registration seam and add only their handler/registration entry; STEP 249 verifies registrations and schedules.
+- STEP 032 and STEPs 046, 052, 085-086, 094, 123, 139, 196, 218-220 and 229: email-producing features before STEP 225 enqueue a typed, minimal-data email job with a stable key on the STEP 011/012 queue; they never call a not-yet-built sender. STEP 225 owns dispatch, STEP 226 delivery logging, and STEP 227 retry. The queue key prevents a duplicate job; delivery retries reuse that same key.
+- STEP 061 and STEPs 085-086: validate uploads with the STEP 061 validator. KYC upload services use a typed, injectable storage port and test adapter; STEP 100-103 provide the shared storage contract/adapters/encryption/record service, and STEP 104 binds KYC document categories to that adapter. No local-disk fallback, direct unencrypted upload, or claim of production persistence before the adapter binding is verified. STEP 104 has only the narrow KYC storage-binding exception listed under File Ownership Rules.
+- STEP 094-096 and STEP 128/153/160/163/167/169: approval creates a durable, idempotent provider-provisioning intent and pending status; it does not claim a provider account exists. STEP 128 defines the capability registry; only the provider's adapter STEP can execute provisioning/bank-link operations and update that provider's authoritative status. STEP 096 handles the no-master-account queue/alert. Never bypass a missing adapter or treat platform approval as provider verification.
+- STEP 114 and STEP 127: STEP 114 must use an approved decimal library for invoice calculations (request package changes through the integrator; never edit `package.json`). STEP 127 adds the shared currency guard/payment-facing money contract using that same decimal implementation; it must not reimplement floating-point arithmetic or retroactively edit completed invoice code.
+- STEP 119-121/182: estimates begin as drafts. STEP 120 owns estimate-specific issuance prerequisites and signature evidence; estimate numbering is separate from invoice numbering. STEP 121 is an idempotent accepted-estimate-to-invoice service using STEP 115's invoice numbering and STEP 065's token service. STEP 182 consumes STEP 120's issued token/signature contract for the client page, decline and expiry. No STEP edits committed invoice-number migration 0114 or genericizes invoice numbering.
+- STEP 124/130/132/150-169/183/189: STEP 124 validates/records a partial-payment intent only; it does not mark money paid or post ledger entries. STEP 130 creates the idempotent payment operation, STEP 132 posts only confirmed money as balanced ledger entries, provider STEPs execute provider operations, STEP 183 supplies the hosted-fields page, and STEP 189 connects the invoice link to the same partial-payment service. A failed/pending attempt never reduces the invoice balance.
+- STEP 125-126/131-144: statement exports read the canonical settlement/ledger tables from STEP 026/025; STEP 136/137/144 populate/release the corresponding balances. Test exports with isolated fixtures before that data exists, but do not create a duplicate statement ledger or claim live settlement coverage until those producers are verified.
+- STEP 139/156/169: bank linking before provider execution creates a pending idempotent link request only. Payoneer STEP 156 or Airwallex STEP 169 completes it and records provider-confirmed status; do not claim automatic bank linking before the adapter response.
+- STEP 149-152/183-190: NMI STEPs 149-152 implement and verify the token/API adapter contract; STEP 183 embeds hosted fields, and STEPs 181/189/190 provide client invoice/estimate/payment-link surfaces. Provider adapters must not create duplicate page implementations, and page STEPs must not handle raw card data.
+
+A STEP that emits an event or intent has completed only that named durable handoff—not the downstream email, provider, ledger or storage action. Its handoff must identify the consumer STEP and the evidence still required before the whole feature can be called end-to-end or production-ready. No STEP may bypass a missing dependency by writing another STEP's tables directly.
+
 ## Coverage Map (feature list section to STEP range)
 - Platform Foundations: STEP 001-011. Application Security Core: STEP 056-067.
 - Database Schema and RLS foundation: STEP 012-036. Later feature-specific schema additions use only their explicitly assigned, append-only migrations.
@@ -37,7 +88,7 @@ variables must be added to .env.example. The handoff file of each STEP records t
 - File Storage Layer: STEP 100-105.
 - Clients, Products, Import, Invoices, Estimates, Recurring and Statements: STEP 106-126.
 - Payment Core, Double-Entry Ledger, Risk Limits, Fulfilment-Gated Settlement, Reserve, Payout and Reconciliation: STEP 127-146.
-- Five Payment Provider Adapters (NMI, Payoneer, Rainforest, Stripe Connect, Airwallex): STEP 147-169.
+- Seven Payment Provider Adapters (NMI, Payoneer, Rainforest, Stripe Connect, Airwallex, Payroc, Maverick): STEP 147-169 and 251-258.
 - Optional supplementary identity verification adapters (Jumio, Didit, Sumsub): STEP 170-175.
 - Sales Tax Collection with TaxCloud: STEP 176-180.
 - Client Portal, Payment Pages and Payment Links: STEP 181-190.
@@ -54,16 +105,16 @@ variables must be added to .env.example. The handoff file of each STEP records t
 
 ## File Ownership Rules (applies to all 250 STEPs; only the explicit narrow overrides below are allowed)
 - Foundation STEPs 001-011 own root configuration, config/ and lib/ foundation files.
-- Database STEPs 012-036 own only their numbered migration files in migrations/. New policy-related migrations are owned only by the explicitly named, still-uncompleted domain STEPs 081, 084, 092 and 181; each appends a new migration and rollback after inspecting the current migration inventory. No completed migration is edited.
+- Database STEPs 012-036 own their numbered migration files in migrations/. A later feature STEP may add schema only when its own block explicitly grants a narrow, append-only migration exception and names the schema purpose; inspect the actual migration inventory and use only the next unused number. The specific STEP 123 exception is defined below. Risk-policy migrations remain limited to the explicitly named, still-uncompleted STEPs 081, 084, 092 and 181. No completed migration is edited.
 - Auth STEPs 037-055 own app/(auth)/, app/api/auth/ and lib/auth/.
 - Security STEPs 056-067 own lib/security/.
 - Office STEPs 068-078 own app/(admin)/ and office components.
 - Onboarding and KYC STEPs 079-099 own app/(dashboard)/onboarding/, services/kyc/ and services/submerchant/.
 - STEP 081 has a narrow, pre-authorized cross-path exception, because its approved scope includes MCC in onboarding and merchant profile settings: the existing merchant profile-settings UI component; `lib/i18n/strings/en.ts` for MCC-only labels/messages; the existing client/server Zod schema and API handler for the MCC field only; and the STEP 081-owned additive migration described below. The agent must inspect the repository and list exact paths before editing. Reuse existing authentication, authorization, RLS and security middleware; do not modify those shared guards, refactor unrelated code, change `package.json`, or touch any other completed STEP's behavior. If the required profile/API path cannot be identified without exceeding this exception, stop and ask before editing.
 - Storage STEPs 100-105 own lib/storage/.
-- Business STEPs 106-126 own services/clients/, services/products/, services/invoices/ and invoice components.
+- Business STEPs 106-126 own services/clients/, services/products/, services/invoices/ and invoice components. STEP 123 has a narrow additional exception to edit only the existing recurring-job handler/registration entry under lib/jobs/ if required by STEP 122's seam; it does not own or refactor the STEP 011 queue, worker, scheduler, registry foundation or unrelated jobs.
 - Payment Core STEPs 127-146 own lib/payments/ core files (types, registry, routing, ledger, settlement), never adapter files.
-- Adapter STEPs 147-169 own exactly one file each under lib/payments/adapters/ plus their provider components.
+- Adapter STEPs 147-169 and 251-258 own exactly one file each under lib/payments/adapters/ plus their provider components.
 - Supplementary IDV Adapter STEPs 170-175 own lib/kyc/adapters/ and supplementary identity-provider settings.
 - TaxCloud STEPs 176-180 own lib/tax/ and tax settings.
 - Portal STEPs 181-190 own app/(client-portal)/ and payment components.
@@ -1484,12 +1535,14 @@ Chat line: Implement STEP 116 only: Invoice status workflow transitions with pai
 Sub-steps (same chat session, in order):
    1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
    2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
-   3. Implement the database part of this STEP if any (migration plus rollback proof).
-   4. Implement the core service and logic for: Invoice status workflow transitions with paid invoice edit lock and audit entries.
-   5. Connect the API routes or background jobs for this STEP.
-   6. Build or update the UI for this STEP where applicable and check desktop and mobile widths.
-   7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.
+   3. Inspect STEP 115's committed invoice-numbering API and the actual invoice/event schema. Do not edit STEP 115 files or committed migrations.
+   4. Implement the canonical `draft -> sent` invoice issue transition in the STEP 116-owned invoice service. Expose an internal transaction-aware function that STEP 123 can call with its existing database transaction (do not make STEP 123 call an HTTP endpoint and split the transaction). First verify STEP 011/012 provides a transaction-compatible durable enqueue API with stable idempotency. In one transaction, allocate the number once through STEP 115's `takeInvoiceNumber`, set `issued_at`, change status, write the applicable immutable invoice event and audit record, and enqueue the typed invoice-issue email job with a stable key. Make concurrent/repeated issue requests idempotent; do not issue an already-sent invoice again. If the queue cannot participate in this atomic transaction, stop and request an owner-approved transactional outbox design; do not imply that an event row alone guarantees delivery.
+   5. Implement the remaining status transitions and enforce the paid-invoice edit lock. A paid transition must be based on a valid successful payment/ledger state, never a direct status-only update. Do not implement provider capture in this STEP.
+   6. Connect the authorized API routes/background jobs and UI for this STEP. The issue transition enqueues the durable email job as specified above; it does not send email or claim recipient delivery. Email dispatch/logging/retry remain owned by STEPs 225-227.
+   7. Verify tenant isolation, authorization, RLS, audit/event consistency and rollback/failure atomicity. Test draft-to-sent number/timestamp assignment, repeated and concurrent issue requests, invalid transitions, paid edit rejection and any payment-backed paid transition.
    8. Run typecheck, lint and build for the touched area, exercise the behaviours named in the title, then finish with one commit, push and the completed handoff file.
+
+Acceptance and dependency rule: STEP 123 must call this canonical issue transition; it must not implement a second numbering or status-transition path. Before beginning STEP 123, verify the STEP 116 handoff and code provide this behavior. If STEP 116 is already marked complete but this behavior is absent, do not rewrite its commit or bypass the missing transition; stop and request an owner-approved corrective plan.
 
 ### STEP 117: Invoice PDF generation as a background job
 Chat line: Implement STEP 117 only: Invoice PDF generation as a background job. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 117: Invoice PDF generation as a background job", push, and create docs/handoffs/STEP_117_COMPLETED.md.
@@ -1566,14 +1619,14 @@ Sub-steps (same chat session, in order):
 ### STEP 123: Recurring generation job with due and overdue handling and client reminders
 Chat line: Implement STEP 123 only: Recurring generation job with due and overdue handling and client reminders. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 123: Recurring generation job with due and overdue handling and client reminders", push, and create docs/handoffs/STEP_123_COMPLETED.md.
 Sub-steps (same chat session, in order):
-   1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
-   2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
-   3. Implement the database part of this STEP if any (migration plus rollback proof).
-   4. Implement the core service and logic for: Recurring generation job with due and overdue handling and client reminders.
-   5. Connect the API routes or background jobs for this STEP.
-   6. Build or update the UI for this STEP where applicable and check desktop and mobile widths.
-   7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.
-   8. Run typecheck, lint and build for the touched area, exercise the behaviours named in the title, then finish with one commit, push and the completed handoff file.
+   1. Read the recurring-invoice feature requirements, this plan's Cross-STEP Invoice Issuance Contract, MASTER_PROMPT and the STEP 122 handoff. Verify contiguous completed handoffs, especially STEP 116 and STEP 122, before coding.
+   2. Own only the existing recurring-invoice handler/service under `services/invoices/`, its explicitly registered STEP 123 job-handler entry, and one new append-only migration in `migrations/` for the schema listed below. Do not edit the STEP 011 scheduler/worker foundation, completed STEP 116/122 files, invoice-numbering code from STEP 115, `package.json`, `lib/email/`, or other email-owned files. If an additional path is needed, stop and ask for exact-path approval.
+   3. Inspect all migrations and actual table definitions first. Add a migration only if the approved STEP 123 schema requirement is absent, using exactly the next unused number (never assume a number). Add nullable `invoices.recurring_schedule_id` referencing the existing schedule, nullable `invoices.recurring_run_on` (the canonical scheduled occurrence date), and a tenant-scoped unique partial index over `(company_id, recurring_schedule_id, recurring_run_on)` for recurring rows. Do not add an `invoice_events` dedupe column for email idempotency: email jobs use the STEP 011/012 queue key. Preserve old rows, RLS and append-only triggers. Include and prove a safe rollback on a disposable database; never edit a committed migration. If the required schema cannot be added within STEP 123's authorized scope, stop for an owner-approved plan amendment.
+   4. Use the scheduled occurrence date and timezone supplied by STEP 122, never the worker's current wall-clock date, as `recurring_run_on`. Generate at most one invoice for each `(company_id, schedule_id, occurrence date)`. Handle conflict/concurrent runs by returning or recognizing the already-created occurrence; never allocate another invoice number or duplicate events.
+   5. Create each recurring invoice and issue it by calling STEP 116's canonical issue transition within the same database transaction. The resulting invoice must have its one invoice number, `issued_at`, and `sent` status; the transition must also write the durable issue event/audit record. If any part fails, roll back the entire occurrence. Do not set `sent` directly, bypass STEP 116, charge a payment, or implement a provider-capture flow. `sent` means issued/dispatch-requested under the Cross-STEP contract, not proof of email delivery.
+   6. Sweep only invoices that are actually issued and eligible by status/date. Use the existing per-schedule/per-invoice reminder interval and limit configuration; do not hard-code intervals or add a mutable `sentCount` column. Derive each reminder occurrence from persisted domain events and enqueue its email job with a stable idempotency key scoped to company, invoice and reminder occurrence. The count means reminders durably scheduled, not emails delivered. Queue deduplication must be concurrency-safe; if STEP 011/012 does not provide that guarantee, stop for an approved prerequisite rather than relying on read-then-insert.
+   7. Keep `invoice_events` append-only for domain history. In the same transaction as issuing an invoice or recording a reminder occurrence, enqueue a typed email job on the verified STEP 011/012 queue; do not send email here and do not use `invoice_events` as an outbox/queue. STEP 225 consumes those queue jobs, STEP 226 records delivery attempts/provider IDs, and STEP 227 retries the same job idempotently. If the actual queue contract or allowed job types are missing, stop and request an owner-approved plan amendment rather than editing `lib/email/` or inventing a mutable queue state.
+   8. Test due/not-due and timezone/DST cases, delayed and repeated scheduler runs, concurrent duplicate occurrences, one-time invoice numbering, atomic issue/event/audit rollback, reminder interval/limit behavior, reminder dedupe, and exclusion of draft/paid/void or otherwise ineligible invoices. Verify generated invoice status and number satisfy the existing issue constraint. Run typecheck, lint, build, migration replay and rollback on a disposable database; record that email delivery remains a later STEP dependency. Then create the STEP 123 handoff and its separate commit/push. Do not start STEP 124.
 
 ### STEP 124: Partial payment recording with 20 USD minimum
 Chat line: Implement STEP 124 only: Partial payment recording with 20 USD minimum. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 124: Partial payment recording with 20 USD minimum", push, and create docs/handoffs/STEP_124_COMPLETED.md.
@@ -2809,14 +2862,13 @@ Sub-steps (same chat session, in order):
 ### STEP 225: Activity email events wiring for account, KYC, invoice and payment events
 Chat line: Implement STEP 225 only: Activity email events wiring for account, KYC, invoice and payment events. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 225: Activity email events wiring for account, KYC, invoice and payment events", push, and create docs/handoffs/STEP_225_COMPLETED.md.
 Sub-steps (same chat session, in order):
-   1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
+   1. Read the matching FEATURE_LIST section, this plan's Cross-STEP Invoice Issuance Contract, MASTER_PROMPT rules and the previous handoff file.
    2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
-   3. Implement the database part of this STEP if any (migration plus rollback proof).
-   4. Implement the core service and logic for: Activity email events wiring for account, KYC, invoice and payment events.
-   5. Connect the API routes or background jobs for this STEP.
-   6. Build or update the UI for this STEP where applicable and check desktop and mobile widths.
-   7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.
-   8. Run typecheck, lint and build for the touched area, exercise the behaviours named in the title, then finish with one commit, push and the completed handoff file.
+   3. Consume the durable invoice-issue and overdue-reminder email jobs enqueued by STEP 116/123 and map them to approved invoice/reminder templates. Do not mutate/delete append-only `invoice_events` rows; use send logs for consumer/delivery state.
+   4. Implement the core email event dispatch using the active SMTP/API method and validate the intended recipient and tenant context. Keep provider credentials encrypted and server-side.
+   5. Connect the authorized background job/API path; verify duplicate job delivery is idempotent and each email uses its stable job idempotency key.
+   6. Verify security, tenant isolation and audit logging. Record provider acceptance/success and its message ID through STEP 226, but do not claim inbox/recipient delivery unless the provider supplies delivery evidence.
+   7. Run typecheck, lint and build, exercise successful and failed invoice/reminder delivery, and prove the same failed event can be retried by STEP 227 without creating a second invoice or reminder occurrence. Finish with one commit, push and the completed handoff file.
 
 ### STEP 226: Email send logging with provider message id
 Chat line: Implement STEP 226 only: Email send logging with provider message id. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 226: Email send logging with provider message id", push, and create docs/handoffs/STEP_226_COMPLETED.md.
@@ -3123,3 +3175,97 @@ Sub-steps (same chat session, in order):
    6. Build or update the UI for this STEP where applicable and check desktop and mobile widths.
    7. Verify security for this STEP: validation, RLS, audit log entries and permission checks.
    8. Run typecheck, lint and build for the touched area, exercise the behaviours named in the title, then finish with one commit, push and the completed handoff file.
+
+### STEP 251: Payroc docs verification and sandbox notes
+Chat line: Implement STEP 251 only: Payroc docs verification and sandbox notes. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 251: Payroc docs verification and sandbox notes", push, and create docs/handoffs/STEP_251_COMPLETED.md.
+Sub-steps (same chat session, in order):
+   1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
+   2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
+   3. Read Payroc official API documentation and sandbox/testing pages from payroc.com in this session and record verified URLs in docs/final/PROVIDER_DOCS.md.
+   4. Document Payroc payment methods, sub-merchant onboarding requirements, webhook events, and capability matrix.
+   5. Record sandbox credentials requirements and test card numbers.
+   6. Verify no card data is stored by our platform; Payroc hosted fields handle tokenization.
+   7. Run typecheck, lint and build for the touched area, then finish with one commit, push and the completed handoff file.
+
+### STEP 252: Payroc encrypted key configuration and connection test
+Chat line: Implement STEP 252 only: Payroc encrypted key configuration and connection test. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 252: Payroc encrypted key configuration and connection test", push, and create docs/handoffs/STEP_252_COMPLETED.md.
+Sub-steps (same chat session, in order):
+   1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
+   2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
+   3. Add Payroc entry to the payment provider registry under lib/payments/adapters/payroc/ (one file).
+   4. Implement AES-256-GCM encryption for Payroc API keys before storage (encryption key from environment variables only).
+   5. Implement connection test endpoint; provider cannot be enabled when connection test fails.
+   6. Store only masked last characters and last updated time after saving; never show full key again.
+   7. Add audit log entries for key save, test, enable and disable actions.
+   8. Run typecheck, lint and build for the touched area, then finish with one commit, push and the completed handoff file.
+
+### STEP 253: Payroc payment acceptance (sale/auth/capture/refund/void)
+Chat line: Implement STEP 253 only: Payroc payment acceptance (sale/auth/capture/refund/void). Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 253: Payroc payment acceptance", push, and create docs/handoffs/STEP_253_COMPLETED.md.
+Sub-steps (same chat session, in order):
+   1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
+   2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
+   3. Implement Payroc sale/authorization/capture/refund/void operations per official Payroc API documentation.
+   4. Use idempotency key on every payment; optimistic locking on every editable record.
+   5. Write balanced double-entry ledger entries for payment received, platform fee, hold, reserve and settlement.
+   6. Request 3D Secure on every payment where possible; reject on provider fraud signal.
+   7. Integrate with STEP 128 routing rules; no silent fallback to another provider when no routing rule matches.
+   8. Run typecheck, lint and build for the touched area, then finish with one commit, push and the completed handoff file.
+
+### STEP 254: Payroc sub-merchant provisioning and idempotent webhooks
+Chat line: Implement STEP 254 only: Payroc sub-merchant provisioning and idempotent webhooks. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 254: Payroc sub-merchant provisioning and idempotent webhooks", push, and create docs/handoffs/STEP_254_COMPLETED.md.
+Sub-steps (same chat session, in order):
+   1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
+   2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
+   3. Implement Payroc sub-merchant creation via Payroc gateway as documented by Payroc.
+   4. Persist provider name, provider submerchant id, provider verification status (pending/action_required/verified/restricted/rejected) and capabilities separately per processor.
+   5. Accept Payroc webhooks only after signature verification; process idempotently.
+   6. Provider-required verification must complete before charges/payouts are enabled for that provider.
+   7. Verify status from one processor is not assumed to satisfy another processor's onboarding requirements.
+   8. Run typecheck, lint and build for the touched area, then finish with one commit, push and the completed handoff file.
+
+### STEP 255: Maverick docs verification and sandbox notes
+Chat line: Implement STEP 255 only: Maverick docs verification and sandbox notes. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 255: Maverick docs verification and sandbox notes", push, and create docs/handoffs/STEP_255_COMPLETED.md.
+Sub-steps (same chat session, in order):
+   1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
+   2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
+   3. Read Maverick official API documentation and sandbox/testing pages from maverick.com (or official Maverick domain) in this session and record verified URLs in docs/final/PROVIDER_DOCS.md.
+   4. Document Maverick payment methods, sub-merchant onboarding requirements, webhook events, and capability matrix.
+   5. Record sandbox credentials requirements and test card numbers.
+   6. Verify no card data is stored by our platform; Maverick hosted fields handle tokenization.
+   7. Run typecheck, lint and build for the touched area, then finish with one commit, push and the completed handoff file.
+
+### STEP 256: Maverick encrypted key configuration and connection test
+Chat line: Implement STEP 256 only: Maverick encrypted key configuration and connection test. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 256: Maverick encrypted key configuration and connection test", push, and create docs/handoffs/STEP_256_COMPLETED.md.
+Sub-steps (same chat session, in order):
+   1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
+   2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
+   3. Add Maverick entry to the payment provider registry under lib/payments/adapters/maverick/ (one file).
+   4. Implement AES-256-GCM encryption for Maverick API keys before storage (encryption key from environment variables only).
+   5. Implement connection test endpoint; provider cannot be enabled when connection test fails.
+   6. Store only masked last characters and last updated time after saving; never show full key again.
+   7. Add audit log entries for key save, test, enable and disable actions.
+   8. Run typecheck, lint and build for the touched area, then finish with one commit, push and the completed handoff file.
+
+### STEP 257: Maverick payment acceptance (sale/auth/capture/refund/void)
+Chat line: Implement STEP 257 only: Maverick payment acceptance (sale/auth/capture/refund/void). Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 257: Maverick payment acceptance", push, and create docs/handoffs/STEP_257_COMPLETED.md.
+Sub-steps (same chat session, in order):
+   1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
+   2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
+   3. Implement Maverick sale/authorization/capture/refund/void operations per official Maverick API documentation.
+   4. Use idempotency key on every payment; optimistic locking on every editable record.
+   5. Write balanced double-entry ledger entries for payment received, platform fee, hold, reserve and settlement.
+   6. Request 3D Secure on every payment where possible; reject on provider fraud signal.
+   7. Integrate with STEP 128 routing rules; no silent fallback to another provider when no routing rule matches.
+   8. Run typecheck, lint and build for the touched area, then finish with one commit, push and the completed handoff file.
+
+### STEP 258: Maverick sub-merchant provisioning and idempotent webhooks
+Chat line: Implement STEP 258 only: Maverick sub-merchant provisioning and idempotent webhooks. Follow docs/final/FEATURE_LIST.md and docs/final/MASTER_PROMPT.md. Work only on files owned by this STEP. At the end run typecheck and lint, commit with message "STEP 258: Maverick sub-merchant provisioning and idempotent webhooks", push, and create docs/handoffs/STEP_258_COMPLETED.md.
+Sub-steps (same chat session, in order):
+   1. Read the matching FEATURE_LIST section, MASTER_PROMPT rules and the previous handoff file.
+   2. Confirm the owned paths for this STEP from the File Ownership Rules and list them in the working notes.
+   3. Implement Maverick sub-merchant creation via Maverick gateway as documented by Maverick.
+   4. Persist provider name, provider submerchant id, provider verification status (pending/action_required/verified/restricted/rejected) and capabilities separately per processor.
+   5. Accept Maverick webhooks only after signature verification; process idempotently.
+   6. Provider-required verification must complete before charges/payouts are enabled for that provider.
+   7. Verify status from one processor is not assumed to satisfy another processor's onboarding requirements.
+   8. Run typecheck, lint and build for the touched area, then finish with one commit, push and the completed handoff file.

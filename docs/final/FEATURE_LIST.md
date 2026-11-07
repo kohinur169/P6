@@ -75,8 +75,8 @@
 - If no master platform account is connected, provisioning stays queued and the office is alerted.
 - Every KYC decision is audit logged.
 
-## 6. Payment Processors (Five)
-- One adapter file per provider and one registry file listing all five with a capability matrix.
+## 6. Payment Processors (Seven)
+- One adapter file per provider and one registry file listing all seven with a capability matrix.
 - Before coding any adapter, the coding session must read that provider's latest official documentation and sandbox or testing pages on the provider's own website in that session and record the verified URLs.
 - NMI: integration follows the official NMI API documentation and Collect.js rules from
   nmi.com and docs.nmi.com. Card data is collected only through Collect.js hosted fields
@@ -90,6 +90,8 @@
 - Rainforest (rainforestpay.com): payment acceptance and sub-merchant creation.
 - Stripe Connect: connected sub-merchant account creation, charges and payouts.
 - Airwallex (airwallex.com): connected account creation, payment acceptance and payouts.
+- Payroc (payroc.com): payment acceptance and sub-merchant creation.
+- Maverick (maverick.com): payment acceptance and sub-merchant creation.
 - Payment methods: every method supported by the connected processor or gateway can be accepted, including cards and e-wallets.
 - The platform keeps an extension point for future providers: a new adapter added to the registry becomes available in the super admin panel.
 - Super admin gateway page: super_admin only, with 2FA and fresh reauthentication. API keys can be added, tested, enabled and disabled without code change or redeploy.
@@ -329,7 +331,7 @@
 - Cloudflare Turnstile site and secret keys for the production domain.
 - Sentry project with server and client error reporting and release tracking.
 - Email sending domain with SPF, DKIM and DMARC records published and verified, plus a separate subdomain for marketing sending when volume grows.
-- Master platform accounts with the five payment providers, with sandbox keys for staging and live keys for production, and webhook endpoints registered per provider.
+- Master platform accounts with the seven payment providers, with sandbox keys for staging and live keys for production, and webhook endpoints registered per provider.
 - TaxCloud account connection available for merchants who enable United States sales tax collection.
 - Optional supplementary identity-verification accounts (Jumio, Didit, Sumsub), with at most one activated by super_admin; processor-owned KYB/KYC remains independently required.
 - Shopify app created and approved so merchants can install it and connect with credentials. WooCommerce plugin package published for merchant stores.
