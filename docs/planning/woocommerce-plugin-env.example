@@ -1,0 +1,9 @@
+# WooCommerce Plugin Environment Variables (for local development only)
+# In production, settings are saved via WooCommerce admin UI and stored encrypted in wp_options.
+# NEVER commit real values to git.
+
+PLATFORM_API_URL=https://api.kdplatform.example
+PLATFORM_API_KEY=your_platform_api_key_here
+PLATFORM_SECRET_KEY=your_platform_secret_key_here
+WEBHOOK_SECRET=your_webhook_secret_here
+TEST_MODE=true

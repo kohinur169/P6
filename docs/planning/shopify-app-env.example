@@ -1,0 +1,21 @@
+# Shopify App Environment Variables
+# Copy to .env.local and fill in real values. NEVER commit .env.local to git.
+
+# Shopify Partner Dashboard credentials
+SHOPIFY_API_KEY=your_shopify_api_key_here
+SHOPIFY_API_SECRET=your_shopify_api_secret_here
+SHOPIFY_SCOPES=read_orders,write_orders,read_customers,write_customers,read_webhooks,write_webhooks
+
+# App URLs
+APP_URL=https://your-shopify-app.example
+BASE_PATH=/shopify
+
+# KD Platform API
+PLATFORM_API_URL=https://api.kdplatform.example
+PLATFORM_API_KEY=your_platform_api_key_here
+
+# Encryption (32 bytes, base64 encoded)
+ENCRYPTION_MASTER_KEY=base64_encoded_32_byte_key_here
+
+# Next.js
+NEXT_PUBLIC_APP_URL=https://your-shopify-app.example
