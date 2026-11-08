@@ -3,7 +3,7 @@
 **Branch:** `arena/02f9dca9-p6`  
 **Planning Repo:** `/home/user/P6`  
 **Target Coding Repo:** `https://github.com/kohinur169/kd-solution-it`  
-**Language:** English only  
+**Language:** English  
 **Status:** Authoritative implementation prompt  
 **Owner:** Platform Team / Payments Squad
 
@@ -11,36 +11,20 @@
 
 ## 1. How to Use This Prompt
 
-Copy this entire prompt into a new Arena.ai chat session. Also upload the following planning files to the coding repository (`kd-solution-it`) so the agent can reference them:
-
-| # | File Path | Purpose |
-|---|-----------|---------|
-| 1 | `docs/final/STEP_PLAN_250.md` | Total 258 STEPs; STEP 251-258 for Payroc/Maverick |
-| 2 | `docs/final/FEATURE_LIST.md` | Section 6: Payment Processors (Seven) |
-| 3 | `docs/final/API_CONTRACT.md` | Exact API endpoints and JSON formats |
-| 4 | `docs/planning/KYB_POLICY_FLOW_CORRECTION.md` | Signup vs verification flow correction |
-| 5 | `docs/planning/DATABASE_SETUP.md` | Supabase database setup plan |
-| 6 | `docs/planning/MASTER_AGENT_CODING_INSTRUCTIONS.md` | Master coding instructions |
-| 7 | `docs/planning/payroc-adapter-template.ts` | Payroc adapter code template |
-| 8 | `docs/planning/maverick-adapter-template.ts` | Maverick adapter code template |
-| 9 | `docs/planning/payment-registry-update-template.ts` | Payment registry update template |
-| 10 | `docs/planning/webhook-handler-template.ts` | Webhook handler code template |
-| 11 | `docs/planning/migration-0251-payroc-adapter.sql` | Payroc database migration |
-| 12 | `docs/planning/migration-0255-maverick-adapter.sql` | Maverick database migration |
-| 13 | `docs/planning/WEBHOOK_API_RELIABILITY_GUIDE.md` | Webhook and API reliability guide for live production |
-| 14 | `docs/planning/CODE_REVIEW_SECURITY_CHECKLIST.md` | Code review and security checklist |
-| 15 | `docs/planning/PRODUCTION_READINESS_CHECKLIST.md` | Production readiness checklist |
+Copy this entire prompt into a new Arena.ai chat session. Upload all planning files from `/home/user/P6/docs/planning/` and `/home/user/P6/docs/final/` to the coding repository `kd-solution-it` so the agent can reference them.
 
 ---
 
 ## 2. Objective
 
-The agent must complete the following tasks:
+The agent must:
 
 1. Add **Payroc** and **Maverick** as new acquiring processors (STEP 251-258).
-2. **Separate signup flow from KYB/KYC verification flow** — signup page collects only basic account information; compliance policies appear only before KYB/KYC verification submission.
-3. **Never modify STEP 1-250** — step numbers, titles, ownership, and content remain intact.
-4. New STEPs 251-258 are appended only at the end.
+2. **Separate signup flow from KYB/KYC verification flow.**
+   - **Signup page:** email, password, name, phone number, Cloudflare Turnstile, basic Terms of Service checkbox ONLY. NO compliance policies.
+   - **KYB/KYC verification page:** AFTER signup (on business profile/verification page). Shows 11 compliance policies from `cms_pages`. User must accept ALL before "Submit for Verification" button becomes active. On submission, record acceptance in `merchant_policy_acceptance` table.
+3. **Never modify STEP 1-250.**
+4. **Append new STEPs 251-258 only at the end.**
 5. Webhooks and APIs must work reliably with real-time synchronization.
 6. Code must pass GitHub code review, vulnerability scanning, and security checks.
 
@@ -55,34 +39,90 @@ The agent must complete the following tasks:
 | 3 | **Never store card data (PAN, expiry, CVV) on the platform server** — use provider-hosted fields only. |
 | 4 | **Access tokens must be AES-256-GCM encrypted at rest** — encryption key exists only in environment variables. |
 | 5 | **Accept webhooks only after signature verification** — otherwise return `401 Unauthorized`. |
-| 6 | **No compliance policies on signup page** — only basic Terms of Service. |
+| 6 | **NO compliance policies on signup page** — only basic Terms of Service checkbox. |
 | 7 | **Do not accept KYB submission without all policy acceptances** — return `422 Unprocessable Entity`. |
 | 8 | **No real secrets in the Git repository** — only `.env.example` with placeholders. |
-| 9 | **Maverick official documentation URL** — before writing Maverick adapter code, read Maverick's official documentation (maverick.com or official Maverick developer portal). Record the verified URL in `docs/final/PROVIDER_DOCS.md`. Do not guess API endpoints or field names. |
+| 9 | **Maverick official documentation URL** — The user will provide this separately. Do NOT block implementation waiting for it. Use placeholder comments where Maverick API details are needed. |
 
 ---
 
-## 3. Database Schema Decision (Important)
+## 3. Signup Page — Required Fields Only
+
+**Page:** `/signup`  
+**Allowed fields:**
+
+| Field | Type | Required |
+|-------|------|----------|
+| Email | email | Yes |
+| Password | password | Yes |
+| Full Name | text | Yes |
+| Phone Number | tel | Yes |
+| Cloudflare Turnstile | widget | Yes |
+| Terms of Service | checkbox | Yes (basic ToS only) |
+
+**Forbidden on signup page:** KYC/KYB Policy, UBO Policy, AML/CFT Policy, Sanctions/PEP Screening, Underwriting/Risk Assessment, Merchant Acceptance, Chargeback/Dispute, Refund/Settlement, Fraud/Risk Management, Data Privacy/Security, PCI-DSS Compliance.
+
+None of these 11 policies may appear on the signup page. They appear ONLY on the KYB verification page.
+
+---
+
+## 4. KYB/KYC Verification Page
+
+**Page:** `/kyb-verification` (after signup, on business profile)  
+**Source:** All 11 policies loaded from `cms_pages` table.
+
+**Required behavior:**
+
+1. Display all 11 policies from `cms_pages`:
+   1. KYC and KYB Policy
+   2. UBO Policy
+   3. AML and CFT Policy
+   4. Sanctions and PEP Screening Policy
+   5. Underwriting and Risk Assessment Policy
+   6. Merchant Acceptance and Prohibited and Restricted Businesses Policy
+   7. Chargeback and Dispute Management Policy
+   8. Refund and Settlement Policy
+   9. Fraud and Risk Management Policy
+   10. Data Privacy and Security Policy
+   11. PCI-DSS Compliance Policy
+
+2. Each policy has an acceptance checkbox (read the full policy text, then check).
+
+3. **"Submit for Verification" button** is disabled until ALL 11 checkboxes are checked.
+
+4. On submission (`POST /api/v1/kyb/submit`):
+   - Validate that all 11 policies are accepted.
+   - If any missing → return `422 Unprocessable Entity`.
+   - If all accepted → insert into `merchant_policy_acceptance` table.
+
+---
+
+## 5. Database Schema Decision
 
 **Decision:** Use CMS as policy content/version source (Option 2).
 
-- The existing `cms_pages` table already stores versioned policy content.
-- Do **not** create a separate `policy_versions` table.
-- Create **only** one new table: `merchant_policy_acceptance` with these columns:
-  - `id` UUID PRIMARY KEY DEFAULT gen_random_uuid()
-  - `company_id` UUID NOT NULL REFERENCES companies(id)
-  - `cms_page_id` UUID NOT NULL REFERENCES cms_pages(id)
-  - `policy_version` INTEGER NOT NULL (version from `cms_pages`)
-  - `accepted_at` TIMESTAMPTZ DEFAULT now()
-  - `accepted_from_ip` INET NOT NULL
-  - `user_agent` TEXT
-  - `created_at` TIMESTAMPTZ DEFAULT now()
+- Existing `cms_pages` table stores versioned policy content. Do NOT create a separate `policy_versions` table.
+- Create **only** one new table: `merchant_policy_acceptance`:
+
+```sql
+CREATE TABLE merchant_policy_acceptance (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    company_id UUID NOT NULL REFERENCES companies(id),
+    cms_page_id UUID NOT NULL REFERENCES cms_pages(id),
+    policy_version INTEGER NOT NULL,
+    accepted_at TIMESTAMPTZ DEFAULT now(),
+    accepted_from_ip INET NOT NULL,
+    user_agent TEXT,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    UNIQUE (company_id, cms_page_id, policy_version)
+);
+```
+
 - Enable Row Level Security (RLS) on `merchant_policy_acceptance` using `company_id`.
-- Create a unique constraint on `(company_id, cms_page_id, policy_version)` to prevent duplicate acceptances.
 
 ---
 
-## 4. 11 Required Policies
+## 6. 11 Required Policies
 
 The following 11 policies must appear on the KYB acceptance page (sourced from `cms_pages`):
 
@@ -100,7 +140,7 @@ The following 11 policies must appear on the KYB acceptance page (sourced from `
 
 ---
 
-## 5. Step-by-Step Implementation
+## 7. Step-by-Step Implementation
 
 ### Step 1: Read Planning Documents
 
@@ -130,15 +170,14 @@ Create `lib/payments/adapters/payroc/payroc-adapter.ts`:
 - Connection test before enabling provider
 - Payment acceptance: sale/authorization/capture/refund/void
 - Sub-merchant provisioning with idempotent webhooks
-- Read Payroc official documentation during coding session; fill in `VERIFY` placeholders
 
 ### Step 4: Maverick Adapter (STEP 255-258)
 
 Create `lib/payments/adapters/maverick/maverick-adapter.ts`:
 
 - Same pattern as Payroc
-- Read Maverick official documentation during coding session
-- Record verified Maverick documentation URL in `docs/final/PROVIDER_DOCS.md`
+- Use placeholder comments where Maverick API details are needed
+- User will provide Maverick documentation URL separately
 
 ### Step 5: Payment Registry Update
 
@@ -191,6 +230,7 @@ Test:
 - Valid/invalid webhook signatures
 - Idempotency (duplicate event rejection)
 - RLS (company data isolation)
+- KYB policy acceptance validation (all 11 required)
 
 ### Step 9: Handoff Files
 
@@ -232,9 +272,9 @@ Verify all items before go-live:
 
 ## ✅ Definition of Done
 
-- [ ] Signup page shows no compliance policies
-- [ ] Signup page has only basic Terms of Service checkbox
-- [ ] Business profile page shows no policies
+- [ ] Signup page shows NO compliance policies
+- [ ] Signup page has only: email, password, name, phone, Turnstile, basic Terms of Service
+- [ ] Business profile page shows NO policies
 - [ ] Policy acceptance page shows all 11 policies from `cms_pages`
 - [ ] Submit button active only after all policies accepted
 - [ ] `POST /api/v1/kyb/submit` returns `422` without all policy acceptances
@@ -244,8 +284,8 @@ Verify all items before go-live:
 - [ ] Unit tests pass
 - [ ] Migrations are append-only
 - [ ] Payroc and Maverick adapters under `lib/payments/adapters/` (one file each)
-- [ ] Previous 5 provider documentations in `PROVIDER_DOCS.md` not deleted
-- [ ] Maverick official documentation URL recorded in `docs/final/PROVIDER_DOCS.md`
+- [ ] Previous 5 provider documentations not deleted
+- [ ] Maverick placeholder comments where API details unknown (user will provide docs URL separately)
 
 ---
 
@@ -253,14 +293,9 @@ Verify all items before go-live:
 
 ---
 
-এই প্রম্পটটি সম্পূর্ণ ইংরেজি, ব্যাকরণগতভাবে সঠিক এবং নিখুঁত। আপনি এটি অন্য চ্যাটে Arena.ai এজেন্টকে পাঠাতে পারেন।
+এই প্রম্পটটি সম্পূর্ণ ইংরেজি, ব্যাকরণগতভাবে সঠিক এবং নিখুঁত। এখন এজেন্ট সাইনআপ পেজে কোনো কমপ্লায়েন্স পলিসি বসাবে না, এবং KYB পেজে শুধু ১১ টি পলিসি দেখাবে।
 
 এখন এই ফাইলটি গিটহাবে কমিট ও পুশ করছি:
-
-
-
-
-
 
 <tool_call>
 <function=bash>
