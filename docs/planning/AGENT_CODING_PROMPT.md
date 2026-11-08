@@ -7,14 +7,39 @@
 **Status:** Authoritative implementation prompt  
 **Owner:** Platform Team / Payments Squad
 
-আপনি এই প্রম্পটটি Arena.ai এজেন্ট বা কোডিং টিমকে দেবেন। এজেন্টকে এই নির্দেশনা অনুযায়ী কোডিং করতে হবে যেন প্রজেক্টটি ত্রুটিমুক্ত ও প্রডাকশন রেডি হয়।
+---
+
+## 📌 এই প্রম্পটটি কীভাবে ব্যবহার করবেন
+
+আপনি এই স কর্মপত্রটি Arena.ai এজেন্ট বা কোডিং টিমকে পাঠাবেন। এজেন্টকে এই নির্দেশনা অনুযায়ী কোড করতে হবে যেন প্রজেক্টটি ত্রুটিমুক্ত ও প্রডাকশন রেডি হয়।
+
+আপনি এই প্রম্পটের copie কপি করে নতুন চ্যাটে পেস্ট করুন, এবং পাশাপাশি নিচের ফাইল গুলো কোডিং রেপো (`kd-solution-it`) 에 আপলোড করুন:
+
+| নং | ফাইল পাথ | উদ্দেশ্য |
+|----|----------|---------|
+| ১ | `docs/final/STEP_PLAN_250.md` | মোট ২৫৮ STEP; ২৫১-২৫৮ Payroc/Maverick |
+| ২ | `docs/final/FEATURE_LIST.md` | Section 6: Payment Processors (Seven) |
+| ৩ | `docs/final/API_CONTRACT.md` | সঠিক API এন্ডপয়েন্ট, রিকোএসট/রেসপন্স JSON |
+| ৪ | `docs/planning/KYB_POLICY_FLOW_CORRECTION.md` | সাইনআপ vs ভেরিফিকেশন ফ্লো সংশোধন |
+| ৫ | `docs/planning/DATABASE_SETUP.md` | সুপাবase ডাটাবেস সেটআপ প্ল্যান |
+| ৬ | `docs/planning/MASTER_AGENT_CODING_INSTRUCTIONS.md` | মাস্টার কোডিং নির্দেশনা |
+| ৭ | `docs/planning/payroc-adapter-template.ts` | পায়রোক অ্যাডাপ্টার কোড টেমপ্লেট |
+| ৮ | `docs/planning/maverick-adapter-template.ts` | মেভেরিক অ্যাডাপ্টার কোড টেমপ্লেট |
+| ৯ | `docs/planning/payment-registry-update-template.ts` | পেমেন্ট রেজিস্টার আপডেট |
+| ১০ | `docs/planning/webhook-handler-template.ts` | ওয়েবহুক হ্যান্ডলার কোড টেমপ্লেট |
+| ১১ | `docs/planning/migration-0251-payroc-adapter.sql` | পায়রোক ডাটাবেস মাইগ্রেশন |
+| ১২ | `docs/planning/migration-0255-maverick-adapter.sql` | মেভেরিক ডাটাবেস মাইগ্রেশন |
+| ১৩ | `docs/planning/WEBHOOK_API_RELIABILITY_GUIDE.md` | লাইভ প্রডাকশনের জন্য ওয়েবহুক ও API নির্ভরযোগ্যতা |
+| ১৪ | `docs/planning/CODE_REVIEW_SECURITY_CHECKLIST.md` | কোড রিভিউ ও সিকিউরিটি চেকলিস্ট |
+| ১৫ | `docs/planning/PRODUCTION_READINESS_CHECKLIST.md` | প্রডাকশন রেডি চেকলিস্ট |
 
 ---
 
-## ১. লক্ষ্য (Objective)
+## 🎯 লক্ষ্য (Objective)
 
-আপনার কাজ:
-১. পেমেন্ট फैसिलিটেটর প্ল্যাটফর্মে **Payroc** এবং **Maverick** নতুন অ্যাকুইরিং প্রসেসর হিসেবে যুক্ত করা।
+এজেন্টকে নিম্নলিখিত কাজ সম্পন্ন করতে হবে:
+
+১. পেমেন্ট फैसिलিটেটর প্ল্যাটফর্মে **Payroc** এবং **Maverick** নতুন অ্যাকুইরিং প্রসেসর হিসেবে যুক্ত করা (STEP 251-258)।
 ২. **সাইনআপ এবং KYB/KYC ভেরিফিকেশন ফ্লোকে আলাদা করা** — সাইনআপে শুধু মৌলিক অ্যাকাউন্ট তথ্য, নীতিমালা শুধু ভেরিফিকেশনের আগে দেখানো।
 ৩. পুরনো STEP ১-২৫০ কিছুই বদলা যাবে না। নতুন STEP ২৫১-২৫৮ append-only ভাবে থাকবে।
 ৪. ওয়েবহুক ও API ত্রুটিমুক্তভাবে রিয়েল-টাইম সিঙ্ক রাখা।
@@ -22,136 +47,215 @@
 
 ---
 
-## ২. প্ল্যানিং ডকুমেন্ট গুলো (পূর্বে তৈরি, পੜতে হবে)
+## ⚠️ বাধyntাatory নিয়ম (কোনো শর্তে লংঘন করা যাবে না)
 
-নিচের ফাইলগুলি P6 রেপোতে তৈরি রয়েছে। কোডিং শুরু করার আগে এ全部 পড়তে হবে:
-
-| SL | ফাইল পাথ | উদ্দেশ্য |
-|----|----------|---------|
-| ১ | `docs/final/STEP_PLAN_250.md` | মোট ২৫৮ STEP; ২৫১-২৫৮ Payroc/Maverick |
-| ২ | `docs/final/FEATURE_LIST.md` | Section 6: Payment Processors (Seven) |
-| ৩ | `docs/final/API_CONTRACT.md` | সঠিক API এন্ডপয়েন্ট, রিকোএসট/রেসপন্স JSON |
-| ৪ | `docs/planning/SHOPIFY_APP_PLAN.md` | শপিফাই অ্যাপ বিল্ড প্ল্যান |
-| ৫ | `docs/planning/WOOCOMMERCE_PLUGIN_PLAN.md` | ও stories প্লাগইন বিল্ড প্ল্যান |
-| ৬ | `docs/planning/DATABASE_SETUP.md` | সুপাবase ডাটাবেস সেটআপ প্ল্যান |
-| ৭ | `docs/planning/KYB_POLICY_FLOW_CORRECTION.md` | সাইনআপ vs ভেরিফিকেশন ফ্লো সংশোধন |
-| ৮ | `docs/planning/MASTER_AGENT_CODING_INSTRUCTIONS.md` | মাস্টার কোডিং নির্দেশনা |
-| ৯ | `docs/planning/payroc-adapter-template.ts` | পায়রোক অ্যাডাপ্টার কোড টেমপ্লেট |
-| ১০ | `docs/planning/maverick-adapter-template.ts` | মেভেরিক অ্যাডাপ্টার কোড টেমপ্লেট |
-| ১১ | `docs/planning/payment-registry-update-template.ts` | পেমেন্ট রেজিস্টার আপডেট |
-| ১২ | `docs/planning/webhook-handler-template.ts` | ওয়েবহুক হ্যান্ডলার কোড টেমপ্লেট |
-| ১৩ | `docs/planning/migration-0251-payroc-adapter.sql` | পায়রোক ডাটাবেস মাইগ্রেশন |
-| ১৪ | `docs/planning/migration-0255-maverick-adapter.sql` | মেভেরিক ডাটাবেস মাইগ্রেশন |
-| ১৫ | `docs/planning/WEBHOOK_API_RELIABILITY_GUIDE.md` | লাইভ প্রডাকশনের জন্য ওয়েবহুক ও API নির্ভরযোগ্যতা |
+১. **পুরনো STEP ১-২৫০ কিছুই বদলা করবেন না** — নম্বর, টাইটেল, মালিকানা, কনটেন্ট সব intact থাকবে।
+২. **পুরনো কোনো মাইগ্রেশন এডিট করবেন না** — শুধু append-only নতুন মাইগ্রেশন যোগ করবেন।
+৩. **কার্ড ডাটা (প্যান, এক্সপিরি, সiivি) প্ল্যাটফর্ম সার্ভারে যাবে না** — শুধু প্রোভাইডার হোস্টেড ফিল্ড ব্যবহার করবেন।
+৪. **অ্যাক্সেস টোকেন AES-256-GCM এনক্রিপ্টেড রূপে ডাটাবেসে সেভ করবেন** — কী শুধু এনভায়রনমেন্ট ভ্যারিয়েবলে থাকবে।
+৫. **ওয়েবহুক শুধু সিগনেচার ভেরিফিকেশনের পর গ্রহণ করবেন** — অন্যথায় `401 Unauthorized` রিটার্ন করবেন।
+৬. **সাইনআপ পেইজে কোনো কম্প্লায়েন্স পলিসি দেখাবেন না** — শুধু মৌলিক টার্মস অফ সার্ভিস।
+৭. **পলিসি accepter ছাড়া KYB সাবমisión কবूल করবেন না** — `422 Unprocessable Entity` রিটার্ন করবেন।
+৮. **গিট রেপোতে কোনো রিয়্যাল সিক্রেট বা পাসওয়ার্ড থাকবে না** — শুধু `.env.example` প্লেসহোল্ডার।
 
 ---
 
-## ৩. সাইনআপ vs KYB ফ্লো সংশোধন (বাধ্যতামূলক)
+## 🗂️ ধাপ ১: প্ল্যানিং ডকুমেন্ট পড়ুন
 
-### ৩.১ সাইনআপ পেইজ (`/auth/signup`)
-- শুধু: ইমেইল, পাসওয়ার্ড, নাম, ফোন নম্বর, Cloudflare Turnstile, মৌলিক টার্মস অফ সার্ভিস চেকবক্স
-- কোনো কম্প্লায়েন্স পলিসি দেখাবে না (KYC/KYB, UBO, AML/CFT, সানকশন/PEP, আন্ডাররাইটিং, মর্চেন্ট অ behaviors, chargeback, refund, fraud, ডাটা প্রাইভেসি, PCI-DSS — সব বাদ)
+কোডিং শুরু করার আগে নিচের ফাইল গুলো পূর্নাঙ্গভাবে পড়ুন:
 
-### ৩.২ বিজনেস প্রোফাইল পেইজ (`/dashboard/kyb/business-profile`)
-- ব্যবসার তথ্য ও ডকুমেন্ট আপলোড
-- পলিসি দেখাবে না
-
-### ৩.৩ নীতিমালা acceptor পেইজ (`/dashboard/kyb/policy-acceptance`)
-- সব ১১ টি পলিসি দেখাবে, চেকবক্সের মাধ্যমে সম্মতি
-- শুধু সব চেকবক্স চেক করলে সাবমিট বাটন সক্রিয়
-
-### ৩.৪ KYB সাবমিশন (`POST /api/v1/kyb/submit`)
-- শুধুমাত্র সব পলিসি accepter-full হলে সফল
-- অন্যথায় `422 Unprocessable Entity` রিটার্ন করবে
+- `docs/final/STEP_PLAN_250.md` — স্টেপ ২৫১-২৫৮ পায়রোক ও মেভেরিকের জন্য
+- `docs/final/FEATURE_LIST.md` — সেকশন ৬: পেমেন্ট প্রসেসর (সেভেন)
+- `docs/final/API_CONTRACT.md` — সঠিক API এন্ডপয়েন্ট, রিকোএসট/রেসপন্স JSON
+- `docs/planning/KYB_POLICY_FLOW_CORRECTION.md` — সাইনআপ vs ভেরিফিকেশন ফ্লো
+- `docs/planning/DATABASE_SETUP.md` — সুপাবase ডাটাবেস সেটআপ
 
 ---
 
-## ৪. নতুন একুইরিং প্রসেসর যুক্ত করা (STEP 251-258)
+## 🗄️ ধাপ ২: ডাটাবেস মাইগ্রেশন তৈরি (অ্যাপেন্ড-অনলি)
 
-### ৪.১ Payroc (STEP 251-254)
-- `lib/payments/adapters/payroc/` ফোল্ডারে এক ফাইল করে অ্যাডাপ্টার তৈরি
-- AES-256-GCM এনক্রিপ্টেড কী কনফিগারেশন
-- পেমেন্ট গ্রহণ (sale/auth/capture/refund/void)
-- সাব-মার্চ্যান্ট প্রোভিশনিং + আইডempootেন্সি ওয়েবহুক
-- ডকুমেন্টেশন ভেরিফিকেশন (payroc.com offizielle ডকুমেন্টেশন পড়ার পরে)
+নিচের মাইগ্রেশন ফাইল গুলো কোডিং রেপোতে `migrations/` ফোল্ডারে তৈরি করুন। মাইগ্রেশন নম্বর পরের unused নম্বর থেকে শুরু হবে (বর্তমান সর্বোচ্চ নম্বর ইন্সপেক্ট করার পর).
 
-### ৪.২ Maverick (STEP 255-258)
-- `lib/payments/adapters/maverick/` ফোল্ডারে এক ফাইল করে অ্যাডাপ্টার তৈরি
-- একই প্যাটার্নে Maverick এর জন্য
+### ২.১ মাইগ্রেশন: `0261_policy_versions.sql`
+```sql
+CREATE TABLE IF NOT EXISTS policy_versions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    policy_key VARCHAR(64) NOT NULL UNIQUE,
+    title VARCHAR(255) NOT NULL,
+    version INTEGER NOT NULL DEFAULT 1,
+    content_url TEXT NOT NULL,
+    effective_from TIMESTAMPTZ DEFAULT now(),
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now(),
+    deleted_at TIMESTAMPTZ,
+    version_int INTEGER DEFAULT 1
+);
+CREATE INDEX IF NOT EXISTS idx_policy_versions_policy_key ON policy_versions(policy_key);
+ALTER TABLE policy_versions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY policy_versions_public_read ON policy_versions
+    FOR SELECT TO authenticated
+    USING (is_active = true);
+```
 
-### ৪.৩ পেমেন্ট রেজিস্টার আপডেট
-- `lib/payments/registry.ts`-এ `payroc` ও `maverick` নতুন এন্ট্রি যোগ
+### ২.২ মাইগ্রেশন: `0262_merchant_policy_acceptance.sql`
+```sql
+CREATE TABLE IF NOT EXISTS merchant_policy_acceptance (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    company_id UUID NOT NULL REFERENCES companies(id),
+    policy_version_id UUID NOT NULL REFERENCES policy_versions(id),
+    accepted_at TIMESTAMPTZ DEFAULT now(),
+    accepted_from_ip INET NOT NULL,
+    user_agent TEXT,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    deleted_at TIMESTAMPTZ,
+    version_int INTEGER DEFAULT 1
+);
+CREATE INDEX IF NOT EXISTS idx_merchant_policy_acceptance_company_id ON merchant_policy_acceptance(company_id);
+ALTER TABLE merchant_policy_acceptance ENABLE ROW LEVEL SECURITY;
+CREATE POLICY merchant_policy_acceptance_company_isolation ON merchant_policy_acceptance
+    FOR ALL TO authenticated
+    USING (company_id = current_setting('app.current_company_id')::UUID);
+```
+
+### ২.৩ মাইগ্রেশন: `0263_kyc_submissions_update.sql`
+```sql
+ALTER TABLE kyc_submissions 
+ADD COLUMN IF NOT EXISTS policies_accepted_at TIMESTAMPTZ;
+```
+
+### ২.৪ মাইগ্রেশন: `0251_payroc_adapter.sql` এবং `0255_maverick-adapter.sql`
+এই ফাইল গুলো `docs/planning/migration-0251-payroc-adapter.sql` এবং `docs/planning/migration-0255-maverick-adapter.sql` থেকে কপি করুন।
+
+---
+
+## 🔌 ধাপ ৩: পায়রোক অ্যাডাপ্টার বিল্ড (STEP 251-254)
+
+### ৩.১ ফাইল:`lib/payments/adapters/payroc/payroc-adapter.ts`
+`docs/planning/payroc-adapter-template.ts` থেকে কোড কপি করুন এবং নিচের জিনিস গুলো পূরণ করুন:
+
+১. `PAYROC_ENV_CONFIG`-এ সঠিক base URL লিখুন (পায়রোক অফিসিয়াল ডকুমেন্টেশন পড়ার পরে)
+২. `PayrocPaymentRequestSchema`-এ সঠিক ফিল্ড নাম লিখুন
+৩. `testConnection()` মেথডে সঠিক এন্ডপয়েন্ট লিখুন
+৪. `createSubMerchant()`-এ সঠিক রিকোএসট/রেসপন্স ফরম্যাট লিখুন
+৫. `processPayment()`-এ সঠিক পেমেন্ট এন্ডপয়েন্ট লিখুন
+৬. `verifyPayrocWebhookSignature()`-ে সঠিক হেডার নাম যাচাই করুন
+৭. স্ট্যাটাস ম্যাপিং ফাংশন গুলো পায়রোক-এর আসল স্ট্যাটাস অনুযায়ী আপডেট করুন
+
+### ৩.২ নিরাপত্তা
+- অ্যাক্সেস টোকেন AES-256-GCM এনক্রিপ্টেড রূপে সেভ করুন
+- কানেকশন টেস্ট সফল ছাড়া প্রসেসর এনেবল করবেন না
+- পূর্ণ কী সেভ করার পর আর দেখাবেন না
+
+---
+
+## 🔌 ধাপ ৪: মেভেরিক অ্যাডাপ্টার বিল্ড (STEP 255-258)
+
+### ৪.১ ফাইল:`lib/payments/adapters/maverick/maverick-adapter.ts`
+`docs/planning/maverick-adapter-template.ts` থেকে কোড কপি করুন এবং নিচের জিনিস গুলো পূরণ করুন:
+
+১. `MAVERICK_ENV_CONFIG`-এ সঠিক base URL লিখুন
+২. `MaverickPaymentRequestSchema`-এ সঠিক ফিল্ড নাম লিখুন
+৩. `testConnection()` মেথডে সঠিক এন্ডপয়েন্ট লিখুন
+৪. `createSubMerchant()`-এ সঠিক রিকোএসট/রেসপন্স ফরম্যাট লিখুন
+৫. `processPayment()`-এ সঠিক পেমেন্ট এন্ডপয়েন্ট লিখুন
+৬. `verifyMaverickWebhookSignature()`-ে সঠিক হেডার নাম যাচাই করুন
+৭. স্ট্যাটাস ম্যাপিং ফাংশন গুলো মেভেরিক-এর আসল স্ট্যাটাস অনুযায়ী আপডেট করুন
+
+---
+
+## 📦 ধাপ ৫: পেমেন্ট রেজিস্টার আপডেট
+
+### ৫.১ ফাইল:`lib/payments/registry.ts`
+`docs/planning/payment-registry-update-template.ts` থেকে কোড কপি করুন।
+
+নিশ্চিত করুন:
 - পুরনো ৫ টা প্রসেসরের এন্ট্রি পরিবর্তন করবেন না
+- শুধু `payroc` ও `maverick` নতুন এন্ট্রি যোগ করবেন
+- `initializePaymentRegistry()` ফাংশনে নতুন ক্রেডেনশিয়াল پاس করবেন
 
 ---
 
-## ৫. ডাটাবেস মাইগ্রেশন (অ্যাপেন্ড-অনলি)
+## 🪝 ধাপ ৬: ওয়েবহুক হ্যান্ডলার বিল্ড (STEP 254/258)
 
-### ৫.১ নতুন মাইগ্রেশন ফাইল
-- `migrations/0261_policy_versions.sql` — পলিসি ভার্সন টেবিল
-- `migrations/0262_merchant_policy_acceptance.sql` — পলিসি accepter টেবিল
-- `migrations/0263_kyc_submissions_update.sql` — kyc_submissions টেবিল আপডেট
-- `migrations/0251_payroc_adapter.sql` — পায়রোক টেবিল
-- `migrations/0255_maverick_adapter.sql` — মেভেরিক টেবিল
+### ৬.১ ফাইল: `src/app/api/webhooks/payroc/[storeId]/route.ts`
+`docs/planning/webhook-handler-template.ts` থেকে কোড কপি করুন।
 
-### ৫.২ নিয়ম
-- পুরনো কোনো মাইগ্রেশন এডিট করবেন না
-- সর্বোচ্চ 번호 بعدی unused নম্বর ব্যবহার করবেন
-- প্রতিটি মাইগ্রেশনে `up` ও `down` (rollback) 섹শন থাকবে
-- RLC এনabled থাকবে `company_id` দ্বারা
+### ৬.২ ফাইল: `src/app/api/webhooks/maverick/[storeId]/route.ts`
+একই টেমপ্লেট থেকে কোড কপি করুন।
+
+নিশ্চিত করুন:
+- রিকোএসট বডি রå বাংলাদেশ রå পার্স করার আগে HMAC ভেরিফিকেশন করবেন
+- আইডempootেন্সি চেক করবেন (একই ইভেন্ট দ্বোরবার প্রসেস হবে না)
+- রেসপন্স ২০০ ওকে দেবেন
 
 ---
 
-## ৬. API কন্ট্রাক্ট বিল্ডিং
+## 🔐 ধাপ ৭: এনভায়রনমেন্ট ভ্যারিয়েবল সেটআপ
 
-### ৬.১ নতুন এন্ডপয়েন্ট
-| এন্ডপয়েন্ট | পদ্ধতি | উদ্দেশ্য |
-|-----------|--------|---------|
-| `POST /api/v1/policies/accept` | POST | একাধিক পলিসি accepter রেকর্ড |
-| `POST /api/v1/kyb/submit` | POST | KYB সাবমিশন (পলিসি accepter চেক সহ) |
-| `GET /api/v1/kyb/status` | GET | KYB স্ট্যাটাস |
+### ৭.১ ফাইল: `.env.example`
+নিচের ভেরিয়েবল গুলো যোগ করুন:
 
-### ৬.২ রিকোএসট/রেসপন্স ফরম্যাট
-`docs/final/API_CONTRACT.md`-এ লিখিত সঠিক JSON ফরম্যাট অনুসরণ করতে হবে।
+```bash
+# পায়রোক
+PAYROC_API_KEY=your_payroc_api_key
+PAYROC_API_SECRET=your_payroc_api_secret
+PAYROC_MERCHANT_ID=your_payroc_merchant_id
+PAYROC_WEBHOOK_SECRET=your_payroc_webhook_secret
+PAYROC_ENV=sandbox
 
----
+# মেভেরিক
+MAVERICK_CLIENT_ID=your_maverick_client_id
+MAVERICK_CLIENT_SECRET=your_maverick_client_secret
+MAVERICK_MERCHANT_ID=your_maverick_merchant_id
+MAVERICK_WEBHOOK_SECRET=your_maverick_webhook_secret
+MAVERICK_ENV=sandbox
 
-## ৭. নিরাপত্তা নিয়ম (বাধyntাatory)
-
-| নিয়ম | বাস্তবায়ন |
-|------|----------|
-| অ্যাক্সেস টোকেন এনক্রিপশন | AES-256-GCM, কী শুধু এনভায়রনমেন্ট ভ্যারিয়েবলে |
-| ওয়েবহুক ভেরিফিকেশন | সিগনেচার ছাড়া কোনো ওয়েবহুক প্রসেস নয় |
-| কার্ড ডাটা | প্ল্যাটফর্ম সার্ভার কখনো প্যান/এক্সপিরি/সিভiivি দেখবে না |
-| RLS | `company_id` দ্বারা ট্যানেন্ট আইসোলেশন |
-| অডিট লগ | প্রতিটি অ্যাকশন লিখিত হবে |
-| মাস্কিং | পূর্ণ কী/সিক্রেটCreate করার পর একবারই দেখাবে |
-
----
-
-## ৮. যাচাই Checklist (কোডিং শেষের পর)
-
-- [ ] সাইনআপ পেইজে কোনো কম্প্লায়েন্স পলিসি দেখাবে না
-- [ ] সাইনআপের শুধু মৌলিক টার্মস অফ সার্ভিস থাকবে
-- [ ] বিজনেস প্রোফাইল পেইজে কোনো পলিসি দেখাবে না
-- [ ] পলিসি accepter পেইজে সব ১১ টি পলিসি দেখাবে
-- [ ] শুধু সব পলিসি accepter করলে KYB সাবমিট বাটন সক্রিয় হবে
-- [ ] `POST /api/v1/kyb/submit` পলিসি acceptor না থাকলে `422` রিটার্ন করবে
-- [ ] পলিসি accepter রেকর্ডে `accepted_from_ip` ও `user_agent` সেভ হবে
-- [ ] RLS এনabled থাকবে `company_id` দ্বারা
-- [ ] অডিট লগে পলিসি acceptor ও KYB সাবমিশন লিখিত হবে
-- [ ] ইউনিট টেস্ট পাস করবে
-- [ ] মাইগ্রেশন append-only হবে, পুরনো migration edit করা হবে না
-- [ ] Payroc ও Maverick অড্যাপ্টার `lib/payments/adapters/` এর অধীনে এক ফাইল করে থাকবে
-- [ ] `docs/final/PROVIDER_DOCS.md` এর আগের ৫ টা ডকুমেন্টেশন মুছে ফেলা যাবে না
+# এনক্রিপশন (শুধুমাত্র এনভায়রনমেন্টে, গিটে না)
+ENCRYPTION_MASTER_KEY=base64_encoded_32_byte_key
+```
 
 ---
 
-## ৯. গিটহাব কোড রিভিউ, সিকিউরিটি ও vulnérable স্ক্যান ধাপ
+## 🧪 ধাপ ৮: ইউনিট টেস্ট লিখুন
+
+পরীক্ষা করুন:
+1. `testConnection()` সফল/ব্যর্থ কেস
+2. `processPayment()` সফল পেমেন্ট
+3. `processPayment()` ব্যর্থ পেমেন্ট
+4. `refundPayment()` সফল রিফান্ড
+5. `verifyPayrocWebhookSignature()` বৈধ/অবৈধ সígনেচার
+6. `verifyMaverickWebhookSignature()` বৈধ/অবৈধ সígনেচার
+7. আইডempootেন্সি: একই ট্রানজাকশন দ্বোরবার প্রসেস করলে ডুপ্লিকেট না হওয়া
+8. RLC: কোম্পানি A তার লেনデン দেখতে পাবে, কোম্পানি B-এর লেনデン দেখবে না
+
+---
+
+## 📋 ধাপ ৯: হ্যান্ডঅফ ফাইল তৈরি
+
+প্রत्यেক STEP সম্পন্নের পরে তৈরি করুন:
+
+- `docs/handoffs/STEP_251_COMPLETED.md` — পায়রোক ডকুমেন্টেশন ভেরিফিকেশন
+- `docs/handoffs/STEP_252_COMPLETED.md` — পায়রোক এনক্রিপ্টেড কী + কানেকশন টেস্ট
+- `docs/handoffs/STEP_253_COMPLETED.md` — পায়রোক পেমেন্ট গ্রহণ
+- `docs/handoffs/STEP_254_COMPLETED.md` — পায়রোক সাব-মার্চ্যান্ট প্রোভিশনিং + ওয়েবহুক
+- `docs/handoffs/STEP_255_COMPLETED.md` — মেভেরিক ডকুমেন্টেশন ভেরিফিকেশন
+- `docs/handoffs/STEP_256_COMPLETED.md` — মেভেরিক এনক্রিপ্টেড কী + কানেকশন টেস্ট
+- `docs/handoffs/STEP_257_COMPLETED.md` — মেভেরিক পেমেন্ট গ্রহণ
+- `docs/handoffs/STEP_258_COMPLETED.md` — মেভেরিক সাব-মার্চ্যান্ট প্রোভিশনিং + ওয়েবহুক
+
+হ্যান্ডঅফ ফাইলে লিখতে হবে:
+- স্যান্ডব্যাক্স পেমেন্ট, রিফান্ড, ওয়েবহুক সাইকেল সফল হoulো কিনা
+- এনভায়রনমেন্ট ভ্যারিয়েবল সেট করা কিনা
+- টাইপচেক, লিন্ট, বিল্ড পাস করা কিনা
+
+---
+
+## 🔍 ধাপ ১০: গিটহাব কোড রিভিউ, সিকিউরিটি ও ভালনারেবিলিটি স্ক্যান
 
 কোডিং শেষের পর নিচের ধাপগুলো গিটহাবে করতে হবে:
 
-### ৮.১ পুল রিকুয়েস্ট তৈরি
+### ১০.১ পুল রিকুয়েস্ট তৈরি
 ```bash
 git checkout -b feature/payroc-maverick-integration
 git add .
@@ -160,7 +264,7 @@ git push origin feature/payroc-maverick-integration
 ```
 গিটহাবে পুল রিকুয়েস্ট তৈরি করুন এবং রিভিউয়ারকে অ্যাসাইন করুন।
 
-### ৮.২ কোড রিভিউ চেকলিস্ট
+### ১০.২ কোড রিভিউ চেকলিস্ট
 - সব ফাইলে পথ কমেন্ট আছে কিনা (প্রথম লাইনে `// path: ...`)
 - টাইপস্ক্রিপ্ট strict মোড সক্রিয় কিনা
 - জোড ভ্যালিডেশন সব ফর্ম ও API এন্ডপয়েন্টে আছে কিনা
@@ -168,121 +272,126 @@ git push origin feature/payroc-maverick-integration
 - সিকিউরিটি হেডার সেট করা আছে কিনা
 - রেট লিমিটিং সক্রিয় কিনা
 
-### ৮.৩ সিকিউরিটি স্ক্যান টুলস
+### ১০.৩ সিকিউরিটি স্ক্যান টুলস
 গিটহাব রেপোতে নিচের টুলস সেটআপ করুন:
 
+**CodeQL (গিটহাব বিল্ট-ইন):**
 ```yaml
-# .github/workflows/security-scan.yml
-name: Security Scan
+# .github/workflows/codeql-analysis.yml
+name: "CodeQL"
 on:
   push:
     branches: [main, arena/02f9dca9-p6]
   pull_request:
     branches: [main, arena/02f9dca9-p6]
-
 jobs:
-  security:
+  analyze:
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript', 'typescript']
     steps:
       - uses: actions/checkout@v4
-      - name: Run npm audit
-        run: npm audit --audit-level=high
-      - name: Run Snyk (optional)
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      - name: Run CodeQL
+      - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: javascript, typescript
-      - name: Run CodeQL analyze
+          languages: ${{ matrix.language }}
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+      - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
 ```
 
-### ৮.৪ সংবেদনশীল তথ্য স্ক্যান
-গিটহাব রেপোতে গোপন তথ্য (এপিআই কী, পাসওয়ার্ড, সিক্রেট) স্ক্যান করতে নিচের টুল ব্যবহার করুন:
-- `gitleaks` — গিট ইতিহাসে গোপন তথ্য খুঁজে বের করা
-- `trufflehog` — গিট ইতিহাসে গোপন তথ্য খুঁজে বের করা
+**গোপন তথ্য স্ক্যান (Secret Scanning):**
+গিটহাব রেপো সেটিংসে Security → Secret scanning → Enable করুন।
 
+**ডিপেন্ডেন্ট applicants স্ক্যান (Dependabot):**
+```yaml
+# .github/dependabot.yml
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+```
+
+**গিটলিকস (Gitleaks - অপশনাল):**
 ```bash
-# গিটহাব অ্যাকশনে যোগ করুন
 - name: Run Gitleaks
   uses: gitleaks/gitleaks-action@v2
   env:
     GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 ```
 
-### ৮.৫ ডিপেন্ডেন্সি vulnérability স্ক্যান
+### ১০.৪ ডিপেন্ডেন্সি vulnérability স্ক্যান
 ```bash
 npm audit --audit-level=high
 ```
-অথবা গিটহাব ডিপেন্ডেন্ট অ্যالينಗার্ট সকান সক্রিয় করুন।
 
-### ৮.৬ প্রডাকশন ডিপ্লয়মেন্ট গেট
+### ১০.৫ প্রডাকশন ডিপ্লয়মেন্ট গেট
 গিটহাব এনভায়রনমেন্ট সুরক্ষা নিয়ম সেট করুন:
-- প্রডাকশন এনভায়রনমেন্টে ডিপ্লয় করার আগে পুল রিকুয়েস্ট অনুমোদন বাধ্যতামূলক
+- প্রডাকশন এনভায়রনমেন্টে ডিপ্লয় করার আগে পুল রিকুয়েস্ট অনুমোদন বাধyntাatory
 - কোড রিভিউ কমপক্ষে ২ জনের অনুমোদন প্রয়োজন
 - স্ট্যাটাস চেক পাস করতে হবে (টাইপচেক, লিন্ট, বিল্ড, টেস্ট)
 
 ---
 
-## ৯. প্রডাকশন রেডি finais चेकলিস্ট
+## 🏁 ধাপ ১১: প্রডাকশন রেডি চেকলিস্ট
 
-| নং | চেক পয়েন্ট | সত্যা/অসত্যা |
-|----|-----------|-----------|
-| ১ | সব STEP ১-২৫৮ পাস করে কিনা | |
-| ২ | টাইপচেক, লিন্ট, বিল্ড পাস করে কিনা | |
-| ৩ | ইউনিট টেস্ট পাস করে কিনা | |
-| ৪ | স্যান্ডব্যাক্স পেমেন্ট, রিফান্ড, ওয়েবহুক সাইকেল সফল কিনা | |
-| ৫ | ওয়েবহুক সিগনেচার ভেরিফিকেশন কাজ করে কিনা | |
-| ৬ | আইডempootেন্সি কী কাজ করে কিনা | |
-| ৭ | RLC এনabled কিনা | |
-| ৮ | অডিট লগ সক্রিয় কিনা | |
-| ৯ | এসএসএল সার্টিফিকেট সক্রিয় কিনা | |
-| ১০ | রেট লিমিটিং সক্রিয় কিনা | |
-| ১১ | গোপন তথ্য `.env` ফাইলে নেই কিনা | |
-| ১২ | গিটহাব সিকিউরিটি স্ক্যান পাস করে কিনা | |
+প্রডাকশনে লাইভ করার আগে সব চেক পয়েন্ট সত্য হওয়া নিশ্চিত করুন:
+
+| নং | চেক পয়েন্ট |
+|----|-----------|
+| ১ | সব STEP ১-২৫৮ পাস করা কিনা |
+| ২ | টাইপচেক, লিন্ট, বিল্ড পাস করা কিনা |
+| ৩ | ইউনিট টেস্ট পাস করা কিনা |
+| ৪ | স্যান্ডব্যাক্স পেমেন্ট, রিফান্ড, ওয়েবহুক সাইকেল সফল কিনা |
+| ৫ | ওয়েবহুক সিগনেচার ভেরিফিকেশন কাজ করে কিনা |
+| ৬ | আইডempootেন্সি কী কাজ করে কিনা |
+| ৭ | RLC এনabled কিনা |
+| ৮ | অডিট লগ সক্রিয় কিনা |
+| ৯ | এসএসএল সার্টিফিকেট সক্রিয় কিনা |
+| ১০ | রেট লিমিটিং সক্রিয় কিনা |
+| ১১ | গোপন তথ্য `.env` ফাইলে নেই কিনা |
+| ১২ | গিটহাব সিকিউরিটি স্ক্যান পাস করে কিনা |
 
 সব চেক পয়েন্ট সত্য হওয়ার পর গো-লাই অনুমতি দিন।
 
 ---
 
-## ১০. Arena.ai এজেন্টের জন্য অটোমেটিক বিল্ড নির্দেশনা
+## ❌ ত্রুটি যেন না হয় (সতর্কতা)
 
-এজেন্টকে নিচের ক্রমে কাজ করতে বলুন:
-
-১. **প্রথমে**, `docs/final/STEP_PLAN_250.md`-এ STEP ২৫১-২৫৮ আছে কিনা যাচাই করুন।
-২. **দ্বিতীয়ত**, `docs/final/FEATURE_LIST.md` Section 6-এ "Seven" লিখেছে কিনা যাচাই করুন।
-৩. **তৃতীয়ত**, `docs/planning/KYB_POLICY_FLOW_CORRECTION.md`-এ লিখিত UI/UX ফ্লো অনুযায়ী সাইনআপ পেইজ থেকে কম্প্লায়েন্স পলিসি সরিয়ে ফেলুন।
-৪. **চতুর্থত**, `docs/final/API_CONTRACT.md`-এ লিখিত এন্ডপয়েন্ট অনুযায়ী `POST /api/v1/policies/accept`, `POST /api/v1/kyb/submit` বিল্ড করুন।
-৫. **পঞ্চমত**, `docs/planning/DATABASE_SETUP.md`-এ লিখিত মাইগ্রেশন ফরম্যাট অনুযায়ী নতুন টেবিল তৈরি করুন (পরবর্তী unused মাইগ্রেশন নম্বর ব্যবহার করে)।
-৬. **ষষ্ঠত**, `lib/payments/adapters/payroc/` এবং `lib/payments/adapters/maverick/` ফোল্ডার তৈরি করে অড্যাপ্টার ফাইল লিখুন।
-৭. **সপ্তমত**, ইউনিট টেস্ট লিখুন এবং রান করুন।
-৮. **অষ্টমত**, হ্যান্ডঅফ ফাইল তৈরি করুন (`docs/handoffs/STEP_251_COMPLETED.md` ইত্যাদি)।
-
-এমনকি কোনো পথ বা ফাইল চিহ্নিত করতে অসমর্থ হলে, কাজ বন্ধ করে জিজ্ঞাসা করুন। পুরনো কোনো STEP বা মাইগ্রেশন এডিট করবেন না।
+১. **আসল API ডকুমেন্টেশন পড়ুন:** টেমপ্লেট গুলোতে `VERIFY` লিখা জায়গা গুলো কোডিং সেশনে পায়রোক/মেভেরিক অফিসিয়াল সাইট থেকে ডকুমেন্টেশন পড়ার পরে পূরণ করুন। অনুমান করবেন না।
+২. **পুরনো মাইগ্রেশন এডিট করবেন না:** শুধু append-only নতুন মাইগ্রেশন যোগ করবেন।
+৩. **পুরনো STEP বদলা করবেন না:** STEP ১-২৫০ কিছুই বদলা যাবে না।
+৪. **কার্ড ডাটা:** প্ল্যাটফর্ম সার্ভার কখনো প্যান/এক্সপিরি/সiivি দেখবে না।
+৫. **ওয়েবহুক সিগনেচার:** ভেরিফিকেশন ছাড়া কোনো ওয়েবহুক প্রসেস করবেন না।
+৬. **এনভায়রনমেন্ট ভ্যারিয়েবল:** গিট রেপোতে রিয়্যাল ভ্যালু থাকবে না।
 
 ---
 
-## ১১. কোডিং রেপোতে আপলোড করার জন্য ফাইলের তালিকা
+## ✅ ডেফিনিশন অফ ডন (কাজ শেষের শর্ত)
 
-১. `docs/final/STEP_PLAN_250.md`
-২. `docs/final/FEATURE_LIST.md`
-৩. `docs/final/API_CONTRACT.md`
-৪. `docs/planning/SHOPIFY_APP_PLAN.md`
-৫. `docs/planning/WOOCOMMERCE_PLUGIN_PLAN.md`
-৬. `docs/planning/DATABASE_SETUP.md`
-৭. `docs/planning/KYB_POLICY_FLOW_CORRECTION.md`
-৮. `docs/planning/MASTER_AGENT_CODING_INSTRUCTIONS.md`
-৯. `docs/planning/AGENT_CODING_PROMPT.md` (এই ফাইল)
-১০. `docs/planning/payroc-adapter-template.ts`
-১১. `docs/planning/maverick-adapter-template.ts`
-১২. `docs/planning/payment-registry-update-template.ts`
-১৩. `docs/planning/webhook-handler-template.ts`
-১৪. `docs/planning/migration-0251-payroc-adapter.sql`
-১৫. `docs/planning/migration-0255-maverick-adapter.sql`
-১৬. `docs/planning/WEBHOOK_API_RELIABILITY_GUIDE.md`
+- [ ] সাইনআপ পেইজে কোনো কম্প্লায়েন্স পলিসি দেখাবে না
+- [ ] সাইনআপের শুধু মৌলিক টার্মস অফ সার্ভিস থাকবে
+- [ ] বিজনেস প্রোফাইল পেইজে কোনো পলিসি দেখাবে না
+- [ ] পলিসি accepter পেইজে সব ১১ টি পলিসি দেখাবে
+- [ ] শুধু সব পলিসি accepter করলে KYB সাবমিট বাটন সক্রিয় হবে
+- [ ] `POST /api/v1/kyb/submit` পলিসি acceptor না থাকলে `422` রিটার্ন করবে
+- [ ] পলিসি accepter রেকর্ডে `accepted_from_ip` ও `user_agent` সেভ হবে
+- [ ] RLC এনabled থাকবে `company_id` দ্বারা
+- [ ] অডিট লগে পলিসি acceptor ও KYB সাবমিশন লিখিত হবে
+- [ ] ইউনিট টেস্ট পাস করবে
+- [ ] মাইগ্রেশন append-only হবে, পুরনো migration edit করা হবে না
+- [ ] পায়রোক ও মেভেরিক অড্যাপ্টার `lib/payments/adapters/` এর অধীনে এক ফাইল করে থাকবে
+- [ ] `docs/final/PROVIDER_DOCS.md` এর আগের ৫ টা ডকুমেন্টেশন মুছে ফেলা যাবে না
 
 ---
 
-**End of Agent Coding Prompt.**
+**এই প্রম্পটটি Arena.ai এজেন্টকে দিলে সে নিখুঁতভাবে কোডিং করতে পারবে। কোনো জায়গা confusion হলে কাজ বন্ধ করে জিজ্ঞাসা করুন।**
