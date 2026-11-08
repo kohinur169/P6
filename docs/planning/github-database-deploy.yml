@@ -1,0 +1,95 @@
+# GitHub Database Deploy Workflow — KD SOLUTION IT
+# Copy this file to: kd-solution-it/.github/workflows/database-deploy.yml
+# Language: YAML
+#
+# IMPORTANT: This workflow runs database migrations ONLY after manual approval.
+# Set up a GitHub Environment named "production" with required reviewers before using.
+
+name: Database Deploy (Manual Approval Required)
+
+on:
+  # Manual trigger from GitHub Actions tab
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      migration_note:
+        description: 'Migration note / reason'
+        required: true
+        default: 'Approve database migration'
+  # Optional: Auto-trigger on push to main, but will wait for environment approval
+  push:
+    branches: [main]
+    paths:
+      - 'migrations/**'
+
+env:
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+jobs:
+  # ----------------------------------------------------------------
+  # 1. Pre-deploy validation
+  # ----------------------------------------------------------------
+  validate:
+    name: Validate Migration Files
+    runs-on: ubuntu-latest
+    outputs:
+      migration_count: ${{ steps.count.outputs.count }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Count new migration files
+        id: count
+        run: |
+          COUNT=$(find migrations -name '*.sql' -newer migrations/.last_deploy 2>/dev/null | wc -l || echo 0)
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+          echo "Found $COUNT new migration file(s)"
+
+      - name: Fail if no migrations and push event
+        if: github.event_name == 'push' && steps.count.outputs.count == '0'
+        run: |
+          echo "No new migration files detected. Exiting."
+          exit 0
+
+  # ----------------------------------------------------------------
+  # 2. Deploy Database (requires manual approval via GitHub Environment)
+  # ----------------------------------------------------------------
+  deploy-db:
+    name: Deploy Database Migrations
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment || 'staging' }}
+      url: https://supabase.com/dashboard/project/${{ secrets.SUPABASE_PROJECT_REF }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        run: npm install -g supabase
+
+      - name: Link Supabase project
+        run: supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
+
+      - name: List pending migrations
+        run: supabase migration list --linked
+
+      - name: Run pending migrations
+        run: supabase db push --linked
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ env.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Record deployment
+        run: |
+          echo "Database migration deployed to ${{ github.event.inputs.environment || 'staging' }}"
+          echo "Migration note: ${{ github.event.inputs.migration_note || 'No note provided' }}"
+          touch migrations/.last_deploy

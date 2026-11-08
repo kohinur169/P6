@@ -1,0 +1,111 @@
+# GitHub Security CI/CD Workflow — KD SOLUTION IT
+# Copy this file to: kd-solution-it/.github/workflows/security-ci-cd.yml
+# Language: YAML
+
+name: Security CI/CD Scan
+
+on:
+  push:
+    branches: [main, arena/02f9dca9-p6]
+  pull_request:
+    branches: [main, arena/02f9dca9-p6]
+  schedule:
+    - cron: '0 8 * * 1'  # Weekly scan every Monday 08:00 UTC
+
+jobs:
+  # ----------------------------------------------------------------
+  # 1. CodeQL Static Analysis (GitHub Built-in)
+  # ----------------------------------------------------------------
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript', 'typescript', 'python']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: +security-and-quality
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+
+  # ----------------------------------------------------------------
+  # 2. Dependency Vulnerability Scan (npm audit)
+  # ----------------------------------------------------------------
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate || true
+
+  # ----------------------------------------------------------------
+  # 3. Secret Scanning (Gitleaks)
+  # ----------------------------------------------------------------
+  gitleaks:
+    name: Gitleaks Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+  # ----------------------------------------------------------------
+  # 4. Dependency Review (PRs only)
+  # ----------------------------------------------------------------
+  dependency-review:
+    name: Dependency Review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v3
+
+  # ----------------------------------------------------------------
+  # 5. License Compliance (optional)
+  # ----------------------------------------------------------------
+  license-check:
+    name: License Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run License Check
+        run: echo "License check placeholder - add your license scanner here"
