@@ -3,7 +3,8 @@
 **Branch:** `arena/02f9dca9-p6`  
 **Target Coding Repo:** `https://github.com/kohinur169/kd-solution-it`  
 **Purpose:** Complete list of all environment variables required to deploy the payment platform.  
-**Status:** Authoritative reference — update when new services are added.
+**Status:** Authoritative reference — update when new services are added.  
+**Important:** Payment processor credentials (API Key, Secret, Merchant ID, Webhook Secret) are NOT in environment variables. They are managed by Super Admin via dashboard UI and encrypted with `ENCRYPTION_MASTER_KEY` in the database. See `CREDENTIALS_ARCHITECTURE.md`.
 
 ---
 
@@ -16,6 +17,7 @@
 | 3 | Use different values for `development`, `staging`, and `production` |
 | 4 | `ENCRYPTION_MASTER_KEY` must be 32 bytes, base64-encoded |
 | 5 | All secrets must be rotated every 90 days |
+| 6 | Payment processor credentials are managed via Super Admin dashboard, NOT environment variables |
 
 ---
 
@@ -31,77 +33,11 @@
 
 ---
 
-## 2. Payment Processor Credentials (All 7 Providers)
-
-### NMI (STEP 147-152)
+## 2. Encryption & Security (Required — All Environments)
 
 | Variable | Example Value | Description | Required |
 |----------|--------------|-------------|----------|
-| `NMI_SECURITY_KEY` | `your_nmi_security_key` | NMI API security key | Yes |
-| `NMI_PARTNER_ID` | `your_nmi_partner_id` | NMI partner/merchant ID | Yes |
-| `NMI_SANDBOX_ENDPOINT` | `https://sandbox.nmi.com` | NMI sandbox gateway URL | Yes (sandbox) |
-| `NMI_WEBHOOK_SECRET` | `your_nmi_webhook_secret` | NMI webhook signing secret | Yes |
-
-### Payoneer (STEP 154-156)
-
-| Variable | Example Value | Description | Required |
-|----------|--------------|-------------|----------|
-| `PAYONEER_CLIENT_ID` | `your_payoneer_client_id` | Payoneer OAuth client ID | Yes |
-| `PAYONEER_CLIENT_SECRET` | `your_payoneer_client_secret` | Payoneer OAuth client secret | Yes |
-| `PAYONEER_SANDBOX_BASE_URL` | `https://login.sandbox.payoneer.com` | Payoneer sandbox base URL | Yes (sandbox) |
-
-### Rainforest (STEP 157-160)
-
-| Variable | Example Value | Description | Required |
-|----------|--------------|-------------|----------|
-| `RAINFOREST_API_KEY` | `your_rainforest_api_key` | Rainforest API key | Yes |
-| `RAINFOREST_SANDBOX_BASE_URL` | `https://api.sandbox.rainforestpay.com/v1` | Rainforest sandbox API URL | Yes (sandbox) |
-
-### Stripe Connect (STEP 161-164)
-
-| Variable | Example Value | Description | Required |
-|----------|--------------|-------------|----------|
-| `STRIPE_CONNECT_CLIENT_ID` | `ca_xxx` | Stripe Connect OAuth client ID | Yes |
-| `STRIPE_CONNECT_SECRET_KEY` | `sk_test_xxx` | Stripe secret key | Yes |
-| `STRIPE_PUBLISHABLE_KEY` | `pk_test_xxx` | Stripe publishable key (client-side) | Yes |
-| `STRIPE_WEBHOOK_SECRET` | `whsec_xxx` | Stripe webhook signing secret | Yes |
-
-### Airwallex (STEP 165-169)
-
-| Variable | Example Value | Description | Required |
-|----------|--------------|-------------|----------|
-| `AIRWALLEX_CLIENT_ID` | `your_airwallex_client_id` | Airwallex API client ID | Yes |
-| `AIRWALLEX_API_KEY` | `your_airwallex_api_key` | Airwallex API key | Yes |
-| `AIRWALLEX_SANDBOX_BASE_URL` | `https://api.sandbox.airwallex.com` | Airwallex sandbox API URL | Yes (sandbox) |
-| `AIRWALLEX_WEBHOOK_SECRET` | `your_airwallex_webhook_secret` | Airwallex webhook secret | Yes |
-
-### Payroc (STEP 251-254)
-
-| Variable | Example Value | Description | Required |
-|----------|--------------|-------------|----------|
-| `PAYROC_API_KEY` | `your_payroc_api_key` | Payroc API key | Yes |
-| `PAYROC_API_SECRET` | `your_payroc_api_secret` | Payroc API secret | Yes |
-| `PAYROC_MERCHANT_ID` | `your_payroc_merchant_id` | Payroc merchant ID | Yes |
-| `PAYROC_WEBHOOK_SECRET` | `your_payroc_webhook_secret` | Payroc webhook signing secret | Yes |
-| `PAYROC_ENV` | `sandbox` | `sandbox` or `production` | Yes |
-
-### Maverick (STEP 255-258)
-
-| Variable | Example Value | Description | Required |
-|----------|--------------|-------------|----------|
-| `MAVERICK_CLIENT_ID` | `your_maverick_client_id` | Maverick API client ID | Yes |
-| `MAVERICK_CLIENT_SECRET` | `your_maverick_client_secret` | Maverick API client secret | Yes |
-| `MAVERICK_MERCHANT_ID` | `your_maverick_merchant_id` | Maverick merchant ID | Yes |
-| `MAVERICK_WEBHOOK_SECRET` | `your_maverick_webhook_secret` | Maverick webhook signing secret | Yes |
-| `MAVERICK_ENV` | `sandbox` | `sandbox` or `production` | Yes |
-
----
-
-## 3. Encryption & Security (Required — All Environments)
-
-| Variable | Example Value | Description | Required |
-|----------|--------------|-------------|----------|
-| `ENCRYPTION_MASTER_KEY` | `base64_encoded_32_byte_key` | AES-256-GCM master key for encrypting access tokens at rest | **Yes (Critical)** |
+| `ENCRYPTION_MASTER_KEY` | `base64_encoded_32_byte_key` | AES-256-GCM master key to encrypt processor credentials in database | **Yes (Critical)** |
 | `SESSION_SECRET` | `random_long_string` | Session cookie signing secret | Yes |
 | `JWT_SECRET` | `random_long_string` | JWT token signing secret | Yes |
 | `JWT_EXPIRATION` | `1h` | JWT token expiry time | Yes |
@@ -113,7 +49,7 @@ openssl rand -base64 32
 
 ---
 
-## 4. Authentication & Identity (Required — All Environments)
+## 3. Authentication & Identity (Required — All Environments)
 
 | Variable | Example Value | Description | Required |
 |----------|--------------|-------------|----------|
@@ -124,7 +60,7 @@ openssl rand -base64 32
 
 ---
 
-## 5. Cloudflare Turnstile (Required — Signup Page)
+## 4. Cloudflare Turnstile (Required — Signup Page)
 
 | Variable | Example Value | Description | Required |
 |----------|--------------|-------------|----------|
@@ -133,7 +69,7 @@ openssl rand -base64 32
 
 ---
 
-## 6. Shopify App Integration (Shopify Deployment Only)
+## 5. Shopify App Integration (Shopify Deployment Only)
 
 | Variable | Example Value | Description | Required |
 |----------|--------------|-------------|----------|
@@ -144,7 +80,7 @@ openssl rand -base64 32
 
 ---
 
-## 7. WooCommerce Plugin (WooCommerce Deployment Only)
+## 6. WooCommerce Plugin (WooCommerce Deployment Only)
 
 | Variable | Example Value | Description | Required |
 |----------|--------------|-------------|----------|
@@ -154,7 +90,7 @@ openssl rand -base64 32
 
 ---
 
-## 8. Email Service (Optional — For Notifications)
+## 7. Email Service (Optional — For Notifications)
 
 | Variable | Example Value | Description | Required |
 |----------|--------------|-------------|----------|
@@ -169,7 +105,7 @@ openssl rand -base64 32
 
 ---
 
-## 9. CI/CD & GitHub Secrets (GitHub Actions Only)
+## 8. CI/CD & GitHub Secrets (GitHub Actions Only)
 
 | Variable | Example Value | Description | Required |
 |----------|--------------|-------------|----------|
@@ -180,7 +116,7 @@ Set these in GitHub: Settings → Secrets and variables → Actions
 
 ---
 
-## 10. Complete `.env.example` Template
+## 9. Complete `.env.example` Template
 
 Copy this to `.env` and fill in real values:
 
@@ -195,52 +131,7 @@ SUPABASE_ACCESS_TOKEN=sbp_your_access_token
 SUPABASE_PROJECT_REF=your_project_ref
 
 # ============================================================
-# 2. Payment Processor Credentials (REQUIRED)
-# ============================================================
-
-# NMI
-NMI_SECURITY_KEY=your_nmi_security_key
-NMI_PARTNER_ID=your_nmi_partner_id
-NMI_SANDBOX_ENDPOINT=https://sandbox.nmi.com
-NMI_WEBHOOK_SECRET=your_nmi_webhook_secret
-
-# Payoneer
-PAYONEER_CLIENT_ID=your_payoneer_client_id
-PAYONEER_CLIENT_SECRET=your_payoneer_client_secret
-PAYONEER_SANDBOX_BASE_URL=https://login.sandbox.payoneer.com
-
-# Rainforest
-RAINFOREST_API_KEY=your_rainforest_api_key
-RAINFOREST_SANDBOX_BASE_URL=https://api.sandbox.rainforestpay.com/v1
-
-# Stripe Connect
-STRIPE_CONNECT_CLIENT_ID=ca_xxx
-STRIPE_CONNECT_SECRET_KEY=sk_test_xxx
-STRIPE_PUBLISHABLE_KEY=pk_test_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx
-
-# Airwallex
-AIRWALLEX_CLIENT_ID=your_airwallex_client_id
-AIRWALLEX_API_KEY=your_airwallex_api_key
-AIRWALLEX_SANDBOX_BASE_URL=https://api.sandbox.airwallex.com
-AIRWALLEX_WEBHOOK_SECRET=your_airwallex_webhook_secret
-
-# Payroc
-PAYROC_API_KEY=your_payroc_api_key
-PAYROC_API_SECRET=your_payroc_api_secret
-PAYROC_MERCHANT_ID=your_payroc_merchant_id
-PAYROC_WEBHOOK_SECRET=your_payroc_webhook_secret
-PAYROC_ENV=sandbox
-
-# Maverick
-MAVERICK_CLIENT_ID=your_maverick_client_id
-MAVERICK_CLIENT_SECRET=your_maverick_client_secret
-MAVERICK_MERCHANT_ID=your_maverick_merchant_id
-MAVERICK_WEBHOOK_SECRET=your_maverick_webhook_secret
-MAVERICK_ENV=sandbox
-
-# ============================================================
-# 3. Encryption & Security (REQUIRED — CRITICAL)
+# 2. Encryption & Security (REQUIRED — CRITICAL)
 # ============================================================
 ENCRYPTION_MASTER_KEY=base64_encoded_32_byte_key
 SESSION_SECRET=random_long_session_secret
@@ -248,19 +139,19 @@ JWT_SECRET=random_long_jwt_secret
 JWT_EXPIRATION=1h
 
 # ============================================================
-# 4. Authentication & Identity (REQUIRED)
+# 3. Authentication & Identity (REQUIRED)
 # ============================================================
 NEXTAUTH_SECRET=random_nextauth_secret
 NEXTAUTH_URL=https://yourdomain.com
 
 # ============================================================
-# 5. Cloudflare Turnstile (REQUIRED — Signup Page)
+# 4. Cloudflare Turnstile (REQUIRED — Signup Page)
 # ============================================================
 CLOUDFLARE_TURNSTILE_SITE_KEY=0x4AAAAxxxx
 CLOUDFLARE_TURNSTILE_SECRET_KEY=0x4AAAAxxxx
 
 # ============================================================
-# 6. Shopify App (Shopify Deployment Only)
+# 5. Shopify App (Shopify Deployment Only)
 # ============================================================
 SHOPIFY_API_KEY=your_shopify_api_key
 SHOPIFY_API_SECRET=your_shopify_api_secret
@@ -268,14 +159,14 @@ SHOPIFY_APP_URL=https://yourdomain.com
 SHOPIFY_SCOPES=read_orders,write_orders
 
 # ============================================================
-# 7. WooCommerce Plugin (WooCommerce Deployment Only)
+# 6. WooCommerce Plugin (WooCommerce Deployment Only)
 # ============================================================
 WC_PAYMENT_API_KEY=wc_key_xxx
 WC_PAYMENT_API_SECRET=wc_secret_xxx
 WC_WEBHOOK_SECRET=your_wc_webhook_secret
 
 # ============================================================
-# 8. Email Service (Optional)
+# 7. Email Service (Optional)
 # ============================================================
 SMTP_HOST=smtp.sendgrid.net
 SMTP_PORT=587
@@ -283,11 +174,16 @@ SMTP_USER=apikey
 SMTP_PASS=SG.xxx
 EMAIL_FROM=noreply@yourdomain.com
 EMAIL_FROM_NAME=KD SOLUTION IT
+
+# NOTE: Payment processor credentials (NMI, Stripe, Payroc, Maverick, etc.)
+# are NOT in this file. They are managed via Super Admin dashboard UI
+# and encrypted with ENCRYPTION_MASTER_KEY in the database.
+# See: docs/planning/CREDENTIALS_ARCHITECTURE.md
 ```
 
 ---
 
-## 11. Where to Set Environment Variables
+## 10. Where to Set Environment Variables
 
 | Platform | Where to Set |
 |----------|-------------|
@@ -301,20 +197,35 @@ EMAIL_FROM_NAME=KD SOLUTION IT
 
 ---
 
+## 11. Payment Processor Credentials — NOT in Environment Variables
+
+The following credentials are **NOT** set as environment variables. They are added by Super Admin through the dashboard UI and encrypted in the database:
+
+| Processor | Credentials Managed By |
+|-----------|----------------------|
+| NMI | Super Admin dashboard → encrypted in DB |
+| Payoneer | Super Admin dashboard → encrypted in DB |
+| Rainforest | Super Admin dashboard → encrypted in DB |
+| Stripe Connect | Super Admin dashboard → encrypted in DB |
+| Airwallex | Super Admin dashboard → encrypted in DB |
+| Payroc | Super Admin dashboard → encrypted in DB |
+| Maverick | Super Admin dashboard → encrypted in DB |
+
+Only `ENCRYPTION_MASTER_KEY` is needed as environment variable to enable encryption/decryption of these credentials.
+
+---
+
 ## 12. Pre-Deploy Checklist
 
 Before deploying, confirm:
 
 - [ ] `.env` file exists (not committed to Git)
 - [ ] `ENCRYPTION_MASTER_KEY` is 32 bytes base64-encoded
-- [ ] All 7 payment processor credentials are set
 - [ ] Supabase URL and keys are correct
 - [ ] Cloudflare Turnstile keys are set
-- [ ] Webhook secrets are configured for all providers
-- [ ] `PAYROC_ENV` and `MAVERICK_ENV` set to `sandbox` for testing
 - [ ] GitHub Secrets configured for CI/CD (if using GitHub Actions)
 - [ ] No real secrets in `.env.example`
+- [ ] Super Admin dashboard can access database to store encrypted credentials
+- [ ] `ENCRYPTION_MASTER_KEY` is available to the application at runtime
 
----
-
-এই তালিকা অনুযায়ী সকল এনভায়রনমেন্ট ভেরিয়েবল সেট করলে প্রজেক্টটি সঠিকভাবে ডিপ্লয় করা যাবে।
+এই তালিকা অনুযায়ী সকল এনভায়রনমেন্ট ভেরিয়েবল সেট করলে প্রজেক্টটি সঠিকভাবে ডিপ্লয় করা যাবে। পেমেন্ট প্রসেসরের 크레デンশিয়াল গুলো সুপার অ্যাডমিন ড্যাশবোর্ড থেকে এনক্রিপ্ট করে সেভ করতে পারবেন।
